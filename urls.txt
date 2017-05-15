@@ -1,0 +1,17 @@
+# green - wget green, else ping - yellow
+# else  - red
+#Groupname;InstanceName;URL;Port
+Artifactory;F5;repo.splunk.com;80
+Artifactory;Node1;sv5-prd-artifapp001.sv.splunk.com;8081
+Artifactory;Node2;sv5-prd-artifapp002.sv.splunk.com;8081
+ArtifactoryAWS;Node1;awsart01.re.splunkdev.com;8081
+ArtifactoryAWS;Nginx;awsart02.re.splunkdev.com;80
+ArtifactoryAWS;NginxHTTPS;awsart01.re.splunkdev.com;443
+
+
+#Jenkins;Master;re-jenkins02.sv.splunk.com;80
+Jenkins;F5;Dummyf5;80
+Jenkins;Master1;re-jenkins01.sv.splunk.com;443
+Jenkins;Master2;re-jenkins02.sv.splunk.com;443
+
+
