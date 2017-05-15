@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+   
+}
+
+#status {
+  background-color: #13F021;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+ 
+}
+
+#status1 {
+  background-color: #dfdfdf;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+ 
+}
+
+#green {
+  background-color: #13F021;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+ 
+}
+
+#grey {
+  background-color: #dfdfdf;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+ 
+}
+
+#blue {
+  background-color: #1F4FFC;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+ 
+}
+
+#yellow {
+  background-color: #FCF41F;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+ 
+}
+
+#red {
+  background-color: #F50E0E;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+ 
+}
+
+#lightblue {
+  background-color: #ADD8E6;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+}
+
+#salmon {
+  background-color: #FA8072;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+
+}
+</style>
+</head>
+<body>
+ 
+<table style="width:60%">
