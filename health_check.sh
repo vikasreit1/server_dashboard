@@ -7,7 +7,8 @@
 #-------------------------------------------------------------
 dirpath=`pwd`
 FILE=${dirpath}/urls.txt
-HEALTHCHECK=${dirpath}/temp.html
+HC_File=health_chk_status
+HEALTHCHECK=${dirpath}/health_chk_status
 MAIL_FROM=SERVICES-STATUS@serverName.com
 MAIL_TO=vitikyalapati@splunk.com
 MAIL_SUB="Servers and Services status"
@@ -58,12 +59,6 @@ getResponse(){
         fi
 
 }
-#-----------------------------------------
-# Empty the files
-#-----------------------------------------
-
-> $TEMP_FILE
-> $HTML_FILE
 
 #----------------------------------------------------------------------------------------------------
 #     We first set the title in the html snippet and then do a loop on the respective group urls
@@ -73,7 +68,7 @@ getResponse(){
 #----------------------------------------------------------------------------------------------------
 for i in `cat $FILE | egrep -v '^#|^$' | cut -f1 -d';' | sort | uniq`
 do
-	rm ${i}.html
+	rm ${i}.html  2> /dev/null
 	touch ${i}.html
 	echo "   <tr> " > $i.html
 	echo "      <th id=\"grey\" title=\"$i\">$i</th> " >> $i.html
@@ -91,9 +86,12 @@ do
     echo "   </tr>" >> $i.html
 done
 
-rm index.html*
-rm ${HEALTHCHECK}_*
-rm ${HEALTHCHECK}_${time}
+#----------------------------------------
+# Clean up the directory of the output
+#----------------------------------------
+rm index.html*  2> /dev/null
+rm ${HEALTHCHECK}_*  2> /dev/null
+rm ${HEALTHCHECK}_${time} 2> /dev/null
 touch ${HEALTHCHECK}_${time}
 
 #---------------------------------------
@@ -109,14 +107,17 @@ done
 cat $POSTHTML >> ${HEALTHCHECK}_${time}
 mv  ${HEALTHCHECK}_${time} ${HEALTHCHECK}_${time}.html
 
+for i in `cat $FILE | egrep -v '^#|^$' | cut -f1 -d';' | sort | uniq`
+do
+        rm ${i}.html
+done
 
-
-
-
-
-
-
-
+echo " ----------------------------------------------------------------- " 
+echo " |    Access the health check status using the below url after   | "
+echo " | starting the webserver ---> python -m SimpleHTTPServer 2223 & | "
+echo " ----------------------- Access  URL ----------------------------- " 
+echo " |    localhost:2223/${HC_File}_${time}.html        | "
+echo " ------------------------------------------------------------------ " 
 
 
 

@@ -6,26 +6,6 @@ table, th, td {
    
 }
 
-#status {
-  background-color: #13F021;
-  color: #000000;
-  margin: 0 20px 0 25px;
-  position: relative;
-  top: 5px;
-  border-radius:8px;
- 
-}
-
-#status1 {
-  background-color: #dfdfdf;
-  color: #000000;
-  margin: 0 20px 0 25px;
-  position: relative;
-  top: 5px;
-  border-radius:8px;
- 
-}
-
 #green {
   background-color: #13F021;
   color: #000000;
