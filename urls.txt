@@ -7,6 +7,13 @@ Artifactory;Node2;sv5-prd-artifapp002.sv.splunk.com;8081
 ArtifactoryAWS;Node1;awsart01.re.splunkdev.com;8081
 ArtifactoryAWS;Nginx;awsart02.re.splunkdev.com;80
 ArtifactoryAWS;NginxHTTPS;awsart01.re.splunkdev.com;443
+ArtifactoryProd;F5;repo.splunk.com;80
+ArtifactoryProd;Node1;sv5-prd-artifapp001:8081;8081
+ArtifactoryProd;Node2;sv5-prd-artifapp002:8081;8081
+ArtifactoryProd;Node3;sv5-prd-artifapp003:8081/artifactory;8081
+ArtifactoryProd;DBF5;dB;8080
+ArtifactoryProd;DBNode1;dBnode1;8080
+ArtifactoryProd;DBNode2;dBnode2;8080
 
 
 #Jenkins;Master;re-jenkins02.sv.splunk.com;80
