@@ -90,6 +90,7 @@ done
 # Clean up the directory of the output
 #----------------------------------------
 rm index.html*  2> /dev/null
+rm ping* 2> /dev/null
 rm ${HEALTHCHECK}_*  2> /dev/null
 rm ${HEALTHCHECK}_${time} 2> /dev/null
 touch ${HEALTHCHECK}_${time}
@@ -114,7 +115,7 @@ done
 
 echo " ----------------------------------------------------------------- " 
 echo " |    Access the health check status using the below url after   | "
-echo " | starting the webserver ---> python -m SimpleHTTPServer 2223 & | "
+echo " |    Start the webserver ---> python -m SimpleHTTPServer 2223 & | "
 echo " ----------------------- Access  URL ----------------------------- " 
 echo " |    localhost:2223/${HC_File}_${time}.html        | "
 echo " ------------------------------------------------------------------ " 
