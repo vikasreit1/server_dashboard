@@ -74,6 +74,17 @@ table, th, td {
   border-radius:8px;
 
 }
+
+#white {
+  background-color: #FFF;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+
+}
+
 </style>
 </head>
 <body>
