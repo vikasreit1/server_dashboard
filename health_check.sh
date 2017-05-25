@@ -85,6 +85,7 @@ do
         then
              echo "   </tr>" >> $i.html
              echo "   <tr>" >> $i.html 
+	     echo "      <th id=\"white\" ></th> " >> $i.html
              count=0
         fi
         echo "      <th id=\"$color\" title=\"$url\">${status}${LIMIT}${nodename}</th> " >> $i.html
