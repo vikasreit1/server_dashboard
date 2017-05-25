@@ -72,6 +72,7 @@ do
 	touch ${i}.html
 	echo "   <tr> " > $i.html
 	echo "      <th id=\"grey\" title=\"$i\">$i</th> " >> $i.html
+        count=0
 	for j in `cat $FILE | egrep -v '^#|^$' | grep $i `
 	do
 		groupname=`echo $j | cut -f1 -d';' `
@@ -79,9 +80,15 @@ do
 		url=`echo $j | cut -f3 -d';' `
 		portno=`echo $j | cut -f4 -d';' `
         getResponse $groupname $nodename $url $portno
-
+        count=$(( $count + 1 ))
+        if [ $count -gt 20 ]
+        then
+             echo "   </tr>" >> $i.html
+             echo "   <tr>" >> $i.html 
+             count=0
+        fi
         echo "      <th id=\"$color\" title=\"$url\">${status}${LIMIT}${nodename}</th> " >> $i.html
-
+       
     done
     echo "   </tr>" >> $i.html
 done
@@ -100,6 +107,9 @@ touch ${HEALTHCHECK}_${time}
 #---------------------------------------
 cat $PREHTML >> ${HEALTHCHECK}_${time}
 
+#----------------------------------------
+# Get the output from all the group files
+#----------------------------------------
 for i in `cat $FILE | egrep -v '^#|^$' | cut -f1 -d';' | sort | uniq`
 do
 	cat ${i}.html >> ${HEALTHCHECK}_${time}
