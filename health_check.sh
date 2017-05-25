@@ -88,7 +88,7 @@ do
 	     echo "      <th id=\"white\" ></th> " >> $i.html
              count=0
         fi
-        echo "      <th id=\"$color\" title=\"$url\">${status}${LIMIT}${nodename}</th> " >> $i.html
+        echo "      <th id=\"$color\" title=\"$url\"><a href=\"$url\" target="_top">${status}</a></th> " >> $i.html
        
     done
     echo "   </tr>" >> $i.html
