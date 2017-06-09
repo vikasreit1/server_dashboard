@@ -28,6 +28,12 @@ TEMPDIR=${dirpath}/TEMP
 TEMP_FILE=$OUTPUTDIR/all_env_${time}.csv
 HTML_FILE=$OUTPUTDIR/final_output.html
 
+#--------------------------------------------------Future Support for CURL and Verbose output---------------------------------------------------------------------------
+# Curl Command
+# curl -i --ssl --connect-timeout 20 --retry 1 --retry-delay 2 --insecure https://repo.splunk.com/artifactory/api/system/ping 2>&1 | grep HTTP | tail -1 | cut -f2 -d" "
+# response=$(curl -i --ssl --connect-timeout 20 --retry 1 --retry-delay 2 --insecure $url 2>&1 | grep HTTP | tail -1 | cut -f2 -d" ")
+# echo "      <th id=\"$color\" title=\"$url\"><a href=\"$url\" target="_top">${status}</a></th> " >> $i.html
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 getResponse(){
         groupname=$1
@@ -88,7 +94,7 @@ do
 	     echo "      <th id=\"white\" ></th> " >> $i.html
              count=0
         fi
-        echo "      <th id=\"$color\" title=\"$url\"><a href=\"$url\" target="_top">${status}</a></th> " >> $i.html
+        echo "      <th id=\"$color\" title=\"$url\"><a href=\"$url\" target="_top">${status}${LIMIT}${nodename}</a></th> " >> $i.html
        
     done
     echo "   </tr>" >> $i.html
@@ -99,8 +105,10 @@ done
 #----------------------------------------
 rm index.html*  2> /dev/null
 rm ping* 2> /dev/null
-rm ${HEALTHCHECK}_*  2> /dev/null
-rm ${HEALTHCHECK}_${time} 2> /dev/null
+#rm ${HEALTHCHECK}_*  2> /dev/null
+#rm ${HEALTHCHECK}_${time} 2> /dev/null
+mkdir -p HISTORY
+mv ${HEALTHCHECK}_* HISTORY/
 touch ${HEALTHCHECK}_${time}
 
 #---------------------------------------
