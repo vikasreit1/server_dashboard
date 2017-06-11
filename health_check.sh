@@ -40,7 +40,7 @@ getResponse(){
         nodename=$2
         url=$3
         portno=$4
-        response=$(wget --secure-protocol=TLSv1  --timeout=20 --tries=1 --no-check-certificate $url 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
+        response=$(wget --secure-protocol=TLSv1  --timeout=2 --tries=1 --no-check-certificate $url 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
         if [ "$response" == "200" ]; then 
                 color="green"
                 status="UP"
