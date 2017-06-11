@@ -13,7 +13,7 @@ table, th, td {
   position: relative;
   top: 5px;
   border-radius:8px;
- 
+  border: 4px solid #2FB601; 
 }
 
 #grey {
@@ -23,16 +23,18 @@ table, th, td {
   position: relative;
   top: 5px;
   border-radius:8px;
+  border: 4px solid #B3B6B7;
  
 }
 
 #blue {
-  background-color: #1F4FFC;
+  background-color: #A1F9F8;
   color: #000000;
   margin: 0 20px 0 25px;
   position: relative;
   top: 5px;
   border-radius:8px;
+  border: 4px solid #434CFF;
  
 }
 
@@ -43,6 +45,7 @@ table, th, td {
   position: relative;
   top: 5px;
   border-radius:8px;
+  border: 4px solid #F4D03F;
  
 }
 
@@ -72,7 +75,7 @@ table, th, td {
   position: relative;
   top: 5px;
   border-radius:8px;
-
+  border: 5px solid #C80606;
 }
 
 #white {
@@ -82,6 +85,7 @@ table, th, td {
   position: relative;
   top: 5px;
   border-radius:8px;
+  border: 4px solid #B3B6B7;
 
 }
 
