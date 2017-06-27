@@ -10,7 +10,7 @@ ArtifactoryAWS;NginxHTTPS;awsart01.re.splunkdev.com;443
 ArtifactoryAWS;Node1;awsart01.re.splunkdev.com;8081
 #ArtifactoryOnPremProd;ArtNode1;http://sv5-prd-artifapp001.sv.splunk.com/artifactory;80
 #ArtifactoryOnPremProd;F5;http://repo.splunk.com/artifactory/api/system/ping;80
-#ArtifactoryOnPremProd;F5;https;https://repo.splunk.com/artifactory/api/system/ping;443
+#ArtifactoryOnPremProd;F5-https;https://repo.splunk.com/artifactory/api/system/ping;443
 #ArtifactoryOnPremProd;F5;http://sv5-prd-artifapp001.sv.splunk.com/artifactory;80
 #ArtifactoryProd;DBF5;dB;8080
 GO;F5;go.splunk.com;80

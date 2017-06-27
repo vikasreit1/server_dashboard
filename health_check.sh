@@ -34,13 +34,26 @@ HTML_FILE=$OUTPUTDIR/final_output.html
 # response=$(curl -i --ssl --connect-timeout 20 --retry 1 --retry-delay 2 --insecure $url 2>&1 | grep HTTP | tail -1 | cut -f2 -d" ")
 # echo "      <th id=\"$color\" title=\"$url\"><a href=\"$url\" target="_top">${status}</a></th> " >> $i.html
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#  We do a telnet on the DB Nodes to check the port is up
+#---------------------------------------------------------- 
 
 getResponse(){
         groupname=$1
         nodename=$2
         url=$3
         portno=$4
-        response=$(wget --secure-protocol=TLSv1  --timeout=2 --tries=1 --no-check-certificate $url 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
+        if [[ $nodename =~ .*DB.* ]]
+        then
+             nc -z $url $portno  2>/dev/null
+             if [ $? -eq 0 ];
+             then
+                  response="200"
+             else
+                  response="500"
+             fi
+        else
+             response=$(wget --secure-protocol=TLSv1  --timeout=20 --tries=1 --no-check-certificate $url 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
+        fi
         if [ "$response" == "200" ]; then 
                 color="green"
                 status="UP"
@@ -78,6 +91,7 @@ do
 	touch ${i}.html
 	echo "   <tr> " > $i.html
 	echo "      <th id=\"grey\" title=\"$i\">$i</th> " >> $i.html
+        firstrow=0
         count=0
 	for j in `cat $FILE | egrep -v '^#|^$' | grep $i `
 	do
@@ -85,14 +99,21 @@ do
 		nodename=`echo $j | cut -f2 -d';' `
 		url=`echo $j | cut -f3 -d';' `
 		portno=`echo $j | cut -f4 -d';' `
-        getResponse $groupname $nodename $url $portno
-        count=$(( $count + 1 ))
-        if [ $count -gt 20 ]
+                getResponse $groupname $nodename $url $portno
+                count=$(( $count + 1 ))
+                firstrow=$(( $firstrow + 1 ))
+        if [ $firstrow -eq 21 ] && [ $count -gt 21 ]
         then
              echo "   </tr>" >> $i.html
              echo "   <tr>" >> $i.html 
 	     echo "      <th id=\"white\" ></th> " >> $i.html
-             count=0
+             count=0    ## Count is reset to 0
+        elif [ $count -gt 20 ] && [ $firstrow -gt 21 ]
+        then
+             echo "   </tr>" >> $i.html
+             echo "   <tr>" >> $i.html
+             echo "      <th id=\"white\" ></th> " >> $i.html
+             count=0    ## Count is reset to 0 
         fi
         echo "      <th id=\"$color\" title=\"$url\"><a href=\"$url\" target="_top">${status}${LIMIT}${nodename}</a></th> " >> $i.html
        
