@@ -110,7 +110,6 @@ img {
 </head>
 <body>
 <img src="Infra_engg.png" alt="Mountain View" style="width:904px;height:158px;">
-
 <table style="width:60%">
    <tr>
      <b><p id="date"></p></b>
