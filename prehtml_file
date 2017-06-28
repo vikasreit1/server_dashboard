@@ -113,6 +113,8 @@ img {
 
 <table style="width:60%">
    <tr>
+     <br>
+     <br>
      <b><p id="date"></p></b>
      <script>
         document.getElementById("date").innerHTML = Date();
