@@ -12,6 +12,8 @@ HEALTHCHECK=${dirpath}/health_chk_status
 MAIL_FROM=SERVICES-STATUS@serverName.com
 MAIL_TO=vitikyalapati@splunk.com
 MAIL_SUB="Servers and Services status"
+MAILFILE=maildata.txt
+
 WGET=/usr/local/bin/wget
 TIMEOUT=6 #Seconds
 time=`date +"%m%d%y-%H%M%S"`
@@ -28,6 +30,12 @@ TEMPDIR=${dirpath}/TEMP
 TEMP_FILE=$OUTPUTDIR/all_env_${time}.csv
 HTML_FILE=$OUTPUTDIR/final_output.html
 
+#--------------------
+# Empty the mail file
+#--------------------
+> maildata.txt  
+> total_maildata.txt
+
 #--------------------------------------------------Future Support for CURL and Verbose output---------------------------------------------------------------------------
 # Curl Command
 # curl -i --ssl --connect-timeout 20 --retry 1 --retry-delay 2 --insecure https://repo.splunk.com/artifactory/api/system/ping 2>&1 | grep HTTP | tail -1 | cut -f2 -d" "
@@ -36,6 +44,31 @@ HTML_FILE=$OUTPUTDIR/final_output.html
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  We do a telnet on the DB Nodes to check the port is up
 #---------------------------------------------------------- 
+
+
+sendEmail(){
+outputFile="total_maildata.txt"
+(
+echo "From: Engineering_Infrastructure@splunk.com"
+echo "To: vitikyalapati@splunk.com"
+echo "MIME-Version: 1.0"
+echo "Subject: Test"
+echo "Content-Type: text/html"
+cat premail_data >> total_maildata.txt
+cat maildata.txt >> total_maildata.txt
+cat postmail_data >> total_maildata.txt
+cat $outputFile
+) | /usr/sbin/sendmail -t
+}
+
+generateMaildata(){
+   groupname=$1
+   nodename=$2
+   url=$3
+   mail_file=maildata.txt
+   echo "<TH bgcolor=lightblue>$nodename</TH><TH bgcolor=red>Down</TH>" >> maildata.txt
+   echo "<TR>" >> maildata.txt
+}
 
 getResponse(){
         groupname=$1
@@ -50,6 +83,7 @@ getResponse(){
                   response="200"
              else
                   response="500"
+                  generateMaildata $groupname $nodename $url
              fi
         else
              response=$(wget --secure-protocol=TLSv1  --timeout=20 --tries=1 --no-check-certificate $url 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
@@ -63,18 +97,22 @@ getResponse(){
         elif [ "$response" == "403" ]; then
                 color="lightBlue"
                 status="FILTER?"
+                generateMaildata $groupname $nodename $url
         elif [ "$response" == "404" ]; then 
                 color="salmon"
                 status="NOT_FOUND"
+                generateMaildata $groupname $nodename $url
         elif [ "$response" == "500" ]; then 
                 color="salmon"
                 status="500"
+                generateMaildata $groupname $nodename $url
         elif [ "$response" == "EMPTY" ]; then 
                 color="grey"
                 status=""
         else 
                 color="salmon"
                 status="DOWN"
+                generateMaildata $groupname $nodename $url
         fi
 
 }
@@ -126,6 +164,7 @@ done
 #----------------------------------------
 rm index.html*  2> /dev/null
 rm ping* 2> /dev/null
+rm artifactory* 2>/dev/null
 #rm ${HEALTHCHECK}_*  2> /dev/null
 #rm ${HEALTHCHECK}_${time} 2> /dev/null
 mkdir -p HISTORY
@@ -152,6 +191,8 @@ for i in `cat $FILE | egrep -v '^#|^$' | cut -f1 -d';' | sort | uniq`
 do
         rm ${i}.html
 done
+
+sendEmail
 
 echo " ----------------------------------------------------------------- " 
 echo " |    Access the health check status using the below url after   | "
