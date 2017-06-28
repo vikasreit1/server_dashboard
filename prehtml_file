@@ -78,7 +78,7 @@ table, th, td {
   border: 5px solid #C80606;
 }
 
-#white {
+#whitecell {
   background-color: #FFF;
   color: #000000;
   margin: 0 20px 0 25px;
@@ -89,8 +89,34 @@ table, th, td {
 
 }
 
+#white {
+  background-color: #FFF;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+
+}
+
+
+
+img {
+    position: absolute;
+    left: 30%;
+}
+
 </style>
 </head>
 <body>
- 
+<img src="release_engineering.png" alt="Mountain View" style="width:904px;height:158px;">
+
 <table style="width:60%">
+   <tr>
+     <b><p id="date"></p></b>
+     <script>
+        document.getElementById("date").innerHTML = Date();
+        document.getElementById("date").style.fontSize = "20px";
+     </script>
+   </tr>
+
