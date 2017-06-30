@@ -48,17 +48,47 @@ HTML_FILE=$OUTPUTDIR/final_output.html
 
 sendEmail(){
 outputFile="total_maildata.txt"
+toaddr="vitikyalapati@splunk.com"
 (
 echo "From: Engineering_Infrastructure@splunk.com"
-echo "To: vitikyalapati@splunk.com"
+echo "To: $toaddr"
+#echo "To: vitikyalapati@splunk.com,rbraun@splunk.com,rwen@splunk.com"
 echo "MIME-Version: 1.0"
-echo "Subject: Test"
+echo "Subject: Servers Status"
 echo "Content-Type: text/html"
 cat premail_data >> total_maildata.txt
 cat maildata.txt >> total_maildata.txt
 cat postmail_data >> total_maildata.txt
 cat $outputFile
 ) | /usr/sbin/sendmail -t
+}
+
+sendTxt(){
+txtaddress= vitikyalapati@splunk.com
+outputFile="total_maildata.txt"
+(
+echo "From: Engineering_Infrastructure@splunk.com"
+echo "To: vitikyalapati@splunk.com"
+#echo "To: vitikyalapati@splunk.com,rbraun@splunk.com,rwen@splunk.com"
+echo "MIME-Version: 1.0"
+echo "Subject: Servers Status"
+echo "Content-Type: text/html"
+cat $outputFile
+) | /usr/sbin/sendmail -t
+}
+
+checkAlertPriority(){
+   groupname=$1
+   nodename=$2
+   url=$3
+   alertpriority=$4
+   if [ $alertpriority == 1 ]
+   then
+        sendTxt 
+        sendEmail
+    else
+        sendEmail
+    fi
 }
 
 generateMaildata(){
@@ -137,6 +167,7 @@ do
 		nodename=`echo $j | cut -f2 -d';' `
 		url=`echo $j | cut -f3 -d';' `
 		portno=`echo $j | cut -f4 -d';' `
+        priority=`echo $j | cut -f5 -d';' `
                 getResponse $groupname $nodename $url $portno
                 count=$(( $count + 1 ))
                 firstrow=$(( $firstrow + 1 ))
@@ -164,11 +195,17 @@ done
 #----------------------------------------
 rm index.html*  2> /dev/null
 rm ping* 2> /dev/null
-rm artifactory* 2>/dev/null
+rm artifactory* 2> /dev/null
 #rm ${HEALTHCHECK}_*  2> /dev/null
 #rm ${HEALTHCHECK}_${time} 2> /dev/null
+
+#-------------------------------------------------
+# Move the old health check reports into archive
+#-------------------------------------------------
 mkdir -p HISTORY
-mv ${HEALTHCHECK}_* HISTORY/
+if [ -f ${HEALTHCHECK}_* ]; then
+   mv ${HEALTHCHECK}_* HISTORY/
+fi
 touch ${HEALTHCHECK}_${time}
 
 #---------------------------------------
