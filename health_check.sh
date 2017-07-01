@@ -96,7 +96,7 @@ generateMaildata(){
    nodename=$2
    url=$3
    mail_file=maildata.txt
-   echo "<TH bgcolor=lightblue>$nodename</TH><TH bgcolor=red>Down</TH>" >> maildata.txt
+   echo "<TH bgcolor=lightyellow>$nodename</TH><TH bgcolor=red>Down</TH>" >> maildata.txt
    echo "<TR>" >> maildata.txt
 }
 
