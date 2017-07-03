@@ -30,11 +30,16 @@ TEMPDIR=${dirpath}/TEMP
 TEMP_FILE=$OUTPUTDIR/all_env_${time}.csv
 HTML_FILE=$OUTPUTDIR/final_output.html
 
-#--------------------
+#---------------------------------------
 # Empty the mail file
-#--------------------
+# total_maildata has the html included
+#---------------------------------------
 > maildata.txt  
 > total_maildata.txt
+#--------------------------------
+# Can send a custom text alert
+#--------------------------------
+> alert_data.txt
 
 #--------------------------------------------------Future Support for CURL and Verbose output---------------------------------------------------------------------------
 # Curl Command
@@ -63,48 +68,74 @@ cat $outputFile
 ) | /usr/sbin/sendmail -t
 }
 
-sendTxt(){
-txtaddress= vitikyalapati@splunk.com
+sendAlert(){
 outputFile="total_maildata.txt"
+txtaddress="vitikyalapati@splunk.com"
 (
 echo "From: Engineering_Infrastructure@splunk.com"
-echo "To: vitikyalapati@splunk.com"
+echo "To: $txtaddress"
 #echo "To: vitikyalapati@splunk.com,rbraun@splunk.com,rwen@splunk.com"
 echo "MIME-Version: 1.0"
-echo "Subject: Servers Status"
+echo "Subject: Servers Status - Txt alert"
 echo "Content-Type: text/html"
-cat $outputFile
+cat premail_data >> total_maildata.txt
+cat maildata.txt >> total_maildata.txt
+cat postmail_data >> total_maildata.txt
 ) | /usr/sbin/sendmail -t
 }
 
+#------------------------------
+#  Depends on the mail data
+# if maildata changes, this code 
+#  needs to be revisited
+#------------------------------
+# cat maildata.txt | grep -v TR | cut -f 2 -d "<" | cut -f2 -d">" | sort -nr | uniq
 checkAlertPriority(){
-   groupname=$1
-   nodename=$2
-   url=$3
-   alertpriority=$4
-   if [ $alertpriority == 1 ]
-   then
-        sendTxt 
-        sendEmail
-    else
-        sendEmail
-    fi
+   # groupname=$1
+   # nodename=$2
+   # url=$3
+   for i in `cat maildata.txt | grep -v TR | cut -f 2 -d "<" | cut -f2 -d">" | sort -nr | uniq`
+   do
+       if  [[ $i =~ .*Prod.* ]] 
+       then
+            alertpriority="1"
+            # sendAlert
+            sendEmail
+            break
+       else
+            alertpriority="0"
+       fi
+   done
+   # alertpriority=$4
+   # if [ "$alertpriority" == "1" ]
+   # then
+
+   #  fi
 }
 
 generateMaildata(){
    groupname=$1
    nodename=$2
    url=$3
+   priority=$4
    mail_file=maildata.txt
-   echo "<TH bgcolor=lightyellow>$nodename</TH><TH bgcolor=red>Down</TH>" >> maildata.txt
-   echo "<TR>" >> maildata.txt
+   if [ "$priority" == "1" ]
+   then
+        echo "<TH bgcolor=lightyellow>$groupname</TH><TH bgcolor=lightyellow>$nodename</TH><TH bgcolor=red>Down</TH>" >> maildata.txt
+        echo "<TR>" >> maildata.txt
+   fi
 }
 
+#--------------------------------------
+# If the host is a DB host,we check if
+# the port is up and listening
+#---------------------------------------
 getResponse(){
         groupname=$1
         nodename=$2
         url=$3
         portno=$4
+        priority=$5
         if [[ $nodename =~ .*DB.* ]]
         then
              nc -z $url $portno  2>/dev/null
@@ -127,22 +158,22 @@ getResponse(){
         elif [ "$response" == "403" ]; then
                 color="lightBlue"
                 status="FILTER?"
-                generateMaildata $groupname $nodename $url
+                generateMaildata $groupname $nodename $url $priority
         elif [ "$response" == "404" ]; then 
                 color="salmon"
                 status="NOT_FOUND"
-                generateMaildata $groupname $nodename $url
+                generateMaildata $groupname $nodename $url $priority
         elif [ "$response" == "500" ]; then 
                 color="salmon"
                 status="500"
-                generateMaildata $groupname $nodename $url
+                generateMaildata $groupname $nodename $url $priority
         elif [ "$response" == "EMPTY" ]; then 
                 color="grey"
                 status=""
         else 
                 color="salmon"
                 status="DOWN"
-                generateMaildata $groupname $nodename $url
+                generateMaildata $groupname $nodename $url $priority
         fi
 
 }
@@ -168,7 +199,7 @@ do
 		url=`echo $j | cut -f3 -d';' `
 		portno=`echo $j | cut -f4 -d';' `
         priority=`echo $j | cut -f5 -d';' `
-                getResponse $groupname $nodename $url $portno
+                getResponse $groupname $nodename $url $portno $priority
                 count=$(( $count + 1 ))
                 firstrow=$(( $firstrow + 1 ))
         if [ $firstrow -eq 21 ] && [ $count -gt 21 ]
@@ -196,16 +227,20 @@ done
 rm index.html*  2> /dev/null
 rm ping* 2> /dev/null
 rm artifactory* 2> /dev/null
-#rm ${HEALTHCHECK}_*  2> /dev/null
-#rm ${HEALTHCHECK}_${time} 2> /dev/null
+rm ${HC_File}_latest.html 2> /dev/null
 
 #-------------------------------------------------
 # Move the old health check reports into archive
 #-------------------------------------------------
 mkdir -p HISTORY
-if [ -f ${HEALTHCHECK}_* ]; then
-   mv ${HEALTHCHECK}_* HISTORY/
-fi
+for i in `ls ${HEALTHCHECK}_* 2>/dev/null`
+do
+    mv $i HISTORY/ 2>/dev/null
+done
+
+# if [ -f ${HEALTHCHECK}_* ]; then
+#    mv ${HEALTHCHECK}_* HISTORY/
+# fi
 touch ${HEALTHCHECK}_${time}
 
 #---------------------------------------
@@ -223,19 +258,24 @@ done
 
 cat $POSTHTML >> ${HEALTHCHECK}_${time}
 mv  ${HEALTHCHECK}_${time} ${HEALTHCHECK}_${time}.html
+ln -s ${HEALTHCHECK}_${time}.html ${HC_File}_latest.html
 
+#-------------------------
+# Clean up of the files
+#-------------------------
 for i in `cat $FILE | egrep -v '^#|^$' | cut -f1 -d';' | sort | uniq`
 do
         rm ${i}.html
 done
 
-sendEmail
+checkAlertPriority
+# sendEmail
 
 echo " ----------------------------------------------------------------- " 
 echo " |    Access the health check status using the below url after   | "
 echo " |    Start the webserver ---> python -m SimpleHTTPServer 2223 & | "
 echo " ----------------------- Access  URL ----------------------------- " 
-echo " |    localhost:2223/${HC_File}_${time}.html        | "
+echo " |    localhost:2223/${HC_File}_latest.html        | "
 echo " ------------------------------------------------------------------ " 
 
 
