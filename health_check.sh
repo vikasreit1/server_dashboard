@@ -10,6 +10,7 @@ FILE=${dirpath}/urls.txt
 HC_File=health_chk_status
 HEALTHCHECK=${dirpath}/health_chk_status
 MAIL_FROM=SERVICES-STATUS@serverName.com
+
 MAIL_TO=vitikyalapati@splunk.com
 MAIL_SUB="Servers and Services status"
 MAILFILE=maildata.txt
@@ -215,7 +216,7 @@ do
              echo "      <th id=\"white\" ></th> " >> $i.html
              count=0    ## Count is reset to 0 
         fi
-        echo "      <th id=\"$color\" title=\"$url\"><a href=\"$url\" target="_top">${status}${LIMIT}${nodename}</a></th> " >> $i.html
+        echo "      <th id=\"$color\" title=\"$url\"><a href=\"$url\" target="_top">${nodename}</a></th> " >> $i.html
        
     done
     echo "   </tr>" >> $i.html
@@ -275,7 +276,7 @@ echo " ----------------------------------------------------------------- "
 echo " |    Access the health check status using the below url after   | "
 echo " |    Start the webserver ---> python -m SimpleHTTPServer 2223 & | "
 echo " ----------------------- Access  URL ----------------------------- " 
-echo " |    localhost:2223/${HC_File}_latest.html        | "
+echo " |        localhost:2223/health_chk_status_latest.html           | "
 echo " ------------------------------------------------------------------ " 
 
 
