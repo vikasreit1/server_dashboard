@@ -5,13 +5,17 @@
 # Script is being refactored in python - @author:vitikyalapati
 # Revision: 1.0
 #-------------------------------------------------------------
+# loop continuously 
+while true
+do
+
 dirpath=`pwd`
 FILE=${dirpath}/urls.txt
 HC_File=health_chk_status
 HEALTHCHECK=${dirpath}/health_chk_status
 MAIL_FROM=SERVICES-STATUS@serverName.com
 
-MAIL_TO=vitikyalapati@splunk.com
+MAIL_TO="vitikyalapati@splunk.com,mdickey@splunk.com"
 MAIL_SUB="Servers and Services status"
 MAILFILE=maildata.txt
 
@@ -51,10 +55,15 @@ HTML_FILE=$OUTPUTDIR/final_output.html
 #  We do a telnet on the DB Nodes to check the port is up
 #---------------------------------------------------------- 
 
+usage(){
+
+echo " This is the usage "
+}
+
 
 sendEmail(){
 outputFile="total_maildata.txt"
-toaddr="vitikyalapati@splunk.com"
+toaddr=$1
 (
 echo "From: Engineering_Infrastructure@splunk.com"
 echo "To: $toaddr"
@@ -75,7 +84,6 @@ txtaddress="vitikyalapati@splunk.com"
 (
 echo "From: Engineering_Infrastructure@splunk.com"
 echo "To: $txtaddress"
-#echo "To: vitikyalapati@splunk.com,rbraun@splunk.com,rwen@splunk.com"
 echo "MIME-Version: 1.0"
 echo "Subject: Servers Status - Txt alert"
 echo "Content-Type: text/html"
@@ -84,6 +92,46 @@ cat maildata.txt >> total_maildata.txt
 cat postmail_data >> total_maildata.txt
 ) | /usr/sbin/sendmail -t
 }
+
+
+if [ "$1" == "-h" ]; then
+  echo "| ---------------------------------------------------------| "
+  echo "|   Usage: `basename $0` --email=username@splunk.com     | "
+  echo "| ---------------------------------------------------------| "
+  exit 0
+fi
+
+# if [ $# -ne 1 ]; then
+#   echo "| ---------------------------------------------------------| "
+#   echo "|     Usage: `basename $0` --email=username@splunk.com     |  "
+#   echo "| ---------------------------------------------------------| "
+#   exit 0
+# fi
+
+for i in "$@"
+do
+case $i in
+    -e=*|--email=*)
+    EMAIL="${i#*=}"
+    ;;
+    *)
+            # unknown option
+    ;;
+esac
+done
+  
+if [[ "$EMAIL" -ne "" ]]
+then
+  email_address=${EMAIL}
+else
+  email_address=${MAIL_TO}
+fi
+
+# echo $email_address
+
+#------Exit for Test------
+# exit 1
+
 
 #------------------------------
 #  Depends on the mail data
@@ -101,7 +149,7 @@ checkAlertPriority(){
        then
             alertpriority="1"
             # sendAlert
-            sendEmail
+            sendEmail $email_address
             break
        else
             alertpriority="0"
@@ -271,6 +319,9 @@ done
 
 checkAlertPriority
 # sendEmail
+
+sleep 60
+done
 
 echo " ----------------------------------------------------------------- " 
 echo " |    Access the health check status using the below url after   | "
