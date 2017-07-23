@@ -10,7 +10,7 @@ while true
 do
 
 dirpath=`pwd`
-FILE=${dirpath}/test_urls.txt
+FILE=${dirpath}/urls.txt
 HC_File=health_chk_status
 HEALTHCHECK=${dirpath}/health_chk_status
 MAIL_FROM=SERVICES-STATUS@serverName.com
