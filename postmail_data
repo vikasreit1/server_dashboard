@@ -27,4 +27,17 @@
     <td>The system needs to be rebooted using ilo</td>
     <td>Use the ilo console to reboot --> Sample Login URL:  https://sv3-orca-0313e0b2.ilo.sv.splunk.com/login.html</td>
   </tr>
-</TABLE></BODY></HTML>
+</TABLE>
+<br>
+<br>
+<TABLE border=1>
+<TR>
+    <TD>Latest - Status</TD>
+    <TD bgcolor=peachpuff>http://ttam10.sv.splunk.com:2223/health_chk_status_latest.html</TD>
+</TR>
+<TR>
+    <TD>HISTORY</TD>
+    <TD bgcolor=peachpuff>http://ttam10.sv.splunk.com:2223/HISTORY</TD>
+  </TR>
+</TABLE>
+</BODY></HTML>
