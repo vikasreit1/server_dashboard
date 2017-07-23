@@ -227,7 +227,7 @@ check_ping (){
 
 check_ssh(){
   host_name=$1
-  ssh -q root@$host_name exit
+  ssh -i ~/.ssh/id_rsa -o ConnectTimeout=5 root@$host_name exit
   if [ $? -eq 0 ]
   then
       ssh_color="green"
@@ -248,8 +248,11 @@ check_telnet(){
       telnet_color="green"
       node_status="UP"
       service_status="UP"
+      service_status="green"
       port_status="UP"
+      port_color="lime"
       telnet_status="UP"
+      telnet_color="lime"
   else
       telnet_color="salmon"
       port_color="salmon"
