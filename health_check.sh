@@ -18,8 +18,8 @@ HC_File=health_chk_status
 HEALTHCHECK=${dirpath}/health_chk_status
 MAIL_FROM=SERVICES-STATUS@serverName.com
 
-#MAIL_TO="vitikyalapati@splunk.com,scentoni@splunk.com"
-MAIL_TO="vitikyalapati@splunk.com"
+MAIL_TO="vitikyalapati@splunk.com,scentoni@splunk.com,mdickey@splunk.com"
+#MAIL_TO="vitikyalapati@splunk.com"
 MAIL_SUB="Servers and Services status"
 MAILFILE=maildata.txt
 
