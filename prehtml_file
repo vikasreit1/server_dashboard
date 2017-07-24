@@ -7,7 +7,7 @@ table, th, td {
 }
 
 #green {
-  background-color: #13F021;
+  background-color: #15f023;
   color: #000000;
   margin: 0 20px 0 25px;
   position: relative;
