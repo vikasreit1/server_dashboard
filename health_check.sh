@@ -225,7 +225,7 @@ check_dockerPS(){
     # ssh -q root@$host_name docker ps -a --quiet 2>/dev/null
     #ssh -i ~/.ssh/id_rsa  root@sv3-orca-0409e2b2.sv.splunk.com docker ps
     # ssh -i ~/.ssh/id_rsa  root@sv3-orca-0409e2b2.sv.splunk.com docker info | grep -i running  | cut -f2 -d":"
-    container_count=$(ssh -i ~/.ssh/id_rsa -o ConnectTimeout=10 root@$host_name docker info | grep Running | cut -f2 -d":")
+    container_count=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@$host_name docker info | grep Running | cut -f2 -d":")
     if [ $? -eq 0 ]
     then
         dockerps_color="lime"
@@ -280,7 +280,7 @@ check_ping (){
 
 check_ssh(){
     host_name=$1
-    ssh -i ~/.ssh/id_rsa -o ConnectTimeout=5 root@$host_name exit
+    ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name exit
     if [ $? -eq 0 ]
     then
         ssh_color="lime"
