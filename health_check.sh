@@ -5,6 +5,9 @@
 # Script is being refactored in python - @author:vitikyalapati
 # Revision: 1.0
 #-------------------------------------------------------------
+# Copy the logo into HISTORY directory
+cp Infra_engg.png HISTORY/
+
 # loop continuously 
 while true
 do
@@ -15,7 +18,8 @@ HC_File=health_chk_status
 HEALTHCHECK=${dirpath}/health_chk_status
 MAIL_FROM=SERVICES-STATUS@serverName.com
 
-MAIL_TO="vitikyalapati@splunk.com,scentoni@splunk.com"
+#MAIL_TO="vitikyalapati@splunk.com,scentoni@splunk.com"
+MAIL_TO="vitikyalapati@splunk.com"
 MAIL_SUB="Servers and Services status"
 MAILFILE=maildata.txt
 
@@ -38,7 +42,7 @@ HTML_FILE=$OUTPUTDIR/final_output.html
 
 #---------------------------------------
 # Empty the mail file
-# total_maildata has the html included
+# total_maildata has the html 
 #---------------------------------------
 > maildata.txt  
 > total_maildata.txt
@@ -102,6 +106,7 @@ cat postmail_data >> total_maildata.txt
 
 sendHipChatAlert(){
   echo " this is hipchat alert "
+  # Need to add this ??
 }
 
 
@@ -191,26 +196,65 @@ generateMaildata(){
    ssh_status=$7
    ssh_color=$8
    telnet_status=$9
-   telnet_color=$10
+   telnet_color=${10}
+   dockerps_status=${11}
+   dockerps_color=${12}
+   overlay_status=${13}
+   overlay_color=${14}
+   controller_status="N/A"
+   controller_color="white"
+   # if [ "$#" -ne 12 ]; then
+   #     overlay_status=${13}
+   #     overlay_color=${14}
+   # fi
+   if [ "$#" -eq 16 ]; then
+       controller_status=${15}
+       controller_color=${16}
+   fi
    mail_file=maildata.txt
    if [ "$priority" == "1" ]
    then
-        echo "<TH bgcolor=lightyellow>$groupname</TH><TH bgcolor=lightyellow>$nodename</TH><TH bgcolor=salmon>DOWN</TH><TH bgcolor=$node_color>$node_status</TH><TH bgcolor=$port_color>$port_status</TH><TH bgcolor=$ssh_color>$ssh_status</TH>" >> maildata.txt
+        echo "<TH bgcolor=lightyellow>$groupname</TH><TH bgcolor=lightyellow>$nodename</TH><TH bgcolor=$dockerps_color>$dockerps_status</TH><TH bgcolor=salmon>DOWN</TH><TH bgcolor=$node_color>$node_status</TH><TH bgcolor=$port_color>$port_status</TH><TH bgcolor=$ssh_color>$ssh_status</TH><TH bgcolor=$overlay_color>$overlay_status</TH><TH bgcolor=$controller_color>$controller_status</TH>" >> maildata.txt
         echo "<TR>" >> maildata.txt
    fi
+}
+
+
+check_dockerPS(){
+    host_name=$1
+    # ssh -q root@$host_name docker ps -a --quiet 2>/dev/null
+    #ssh -i ~/.ssh/id_rsa  root@sv3-orca-0409e2b2.sv.splunk.com docker ps
+    # ssh -i ~/.ssh/id_rsa  root@sv3-orca-0409e2b2.sv.splunk.com docker info | grep -i running  | cut -f2 -d":"
+    container_count=$(ssh -i ~/.ssh/id_rsa -o ConnectTimeout=10 root@$host_name docker info | grep Running | cut -f2 -d":")
+    if [ $? -eq 0 ]
+    then
+        dockerps_color="lime"
+        dockerps_status="UP"
+    else
+        dockerps_color="salmon"
+        dockerps_status="DOWN"
+    fi
+
 }
 
 check_ping (){
     host_name=$1
     portno=$2
-    ping -q -c 3 -W 2 $host_name > /dev/null
+
+    ping -q -c 3 -W 2 $host_name 2>/dev/null
 
     if [ $? -eq 0 ]
     then
-        node_color="green"
+        node_color="lime"
         node_status="UP"
         check_ssh $host_name
         check_telnet $host_name $portno
+        # If the arguments are not equal to 2, then its not a db node and we check the status of overlay port 
+        if [ "$#" -ne 2 ]; then
+          overlayport=${3}
+          check_overlay_network_port $host_name $overlayport
+        fi
+        # check_dockerPS $host_name
     else
         node_color="salmon"
         node_status="DOWN"
@@ -222,46 +266,91 @@ check_ping (){
         port_status="DOWN"
         service_color="salmon"
         service_status="DOWN"
+        # Overlay chek will determine this status
+        # overlay_color="salmon"
+        # overlay_status="DOWN"
+        # Controller check will determine this
+        # controller_color="salmon"
+        # controller_status="DOWN"
+        # Docker ps check will determine this
+        # dockerps_status="DOWN"
+        # dockerps_color="salmon"
     fi
 }
 
 check_ssh(){
-  host_name=$1
-  ssh -i ~/.ssh/id_rsa -o ConnectTimeout=5 root@$host_name exit
-  if [ $? -eq 0 ]
-  then
-      ssh_color="green"
-      ssh_status="UP"
-  else
-      ssh_color="salmon"
-      ssh_status="DOWN"
-  fi
+    host_name=$1
+    ssh -i ~/.ssh/id_rsa -o ConnectTimeout=5 root@$host_name exit
+    if [ $? -eq 0 ]
+    then
+        ssh_color="lime"
+        ssh_status="UP"
+    else
+        ssh_color="salmon"
+        ssh_status="DOWN"
+    fi
 
 }
 
 check_telnet(){
   url=$1
   portno=$2
-  nc -z $url $portno  2>/dev/null
+  nc  -w 10 -z $url $portno  2>/dev/null
   if [ $? -eq 0 ];
   then
-      telnet_color="green"
+      telnet_color="lime"
+      telnet_status="UP"
       node_status="UP"
       service_status="UP"
-      service_status="green"
+      service_color="green"
       port_status="UP"
       port_color="lime"
-      telnet_status="UP"
-      telnet_color="lime"
   else
-      telnet_color="salmon"
-      port_color="salmon"
-      service_status="DOWN"
-      port_status="DOWN"
       telnet_status="DOWN"
+      telnet_color="salmon"
+      port_status="DOWN"
+      port_color="salmon"
+      service_color="salmon"
+      service_status="DOWN"
   fi
 }
 
+check_controller_https_ping(){
+    httpsurl=$1
+    sleep 1
+    try1=$(wget --timeout=1 --tries=1 --no-check-certificate ${httpsurl}  2>&1  | grep HTTP | awk '{print $6}')
+    sleep 1
+    try2=$(wget --timeout=1 --tries=1 --no-check-certificate ${httpsurl}  2>&1  | grep HTTP | awk '{print $6}')
+    sleep 1
+    try3=$(wget --timeout=1 --tries=1 --no-check-certificate ${httpsurl}  2>&1  | grep HTTP | awk '{print $6}')
+    if [ "$try1" == "200" ] ||  [ "$try1" == "200" ] ||  [ "$try1" == "200" ]
+    then
+        controller_status="UP"
+        controller_color="lime"
+    else
+        controller_status="DOWN"
+        controller_color="salmon"
+    fi
+}
+
+check_overlay_network_port(){
+  url=$1
+  overlayportno=$2
+  if [[ $url != *"sv3-orca-ucp-00"* ]]; then
+      nc -z -w 10 $url $overlayportno  2>/dev/null
+      if [ $? -eq 0 ];
+      then
+          overlay_color="lime"
+          overlay_status="UP"
+      else
+          overlay_status="DOWN"
+          overlay_color="salmon"
+      fi
+  else
+      overlay_color="white"
+      overlay_status="N/A"
+  fi
+}
 #------------------------------------
 #  Actions to be taken in case
 #  the service or the host is down
@@ -282,7 +371,18 @@ host_restart() {
 #
 # Change the status
 #
-
+generate_html(){
+  service_color=$1
+  url=$2
+  nodename=$3 
+  container_count=$4
+  if [[ $url == "ucp.splunk.com" ]]
+  then
+      echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${nodename}</a></th> " >> $i.html
+  else
+      echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${nodename}-( ${container_count} )</a></th> " >> $i.html
+  fi
+}
 
 #--------------------------------------
 # If the host is a DB host,we check if
@@ -292,91 +392,134 @@ getResponse(){
         groupname=$1
         nodename=$2
         url=$3
+        host_name=$url
         portno=$4
-        priority=$5
+        overlayport=$5
+        priority=$6
+        if [[ $url == "ucp.splunk.com" ]]
+        then
+              url="https://ucp.splunk.com"
+        fi
+
         if [[ $nodename =~ .*DB.* ]]
         then
-             nc -z $url $portno  2>/dev/null
+             nc -z -w 10 $url $portno  2>/dev/null
              if [ $? -eq 0 ];
              then
                 response="200"
                 service_color="green"
                 service_status="UP"
                 node_status="UP"
-                node_color="green"
+                node_color="lime"
                 ssh_status="UP"
-                ssh_color="green"
+                ssh_color="lime"
                 telnet_status="UP"
-                telnet_color="green"
+                telnet_color="lime"
              else
                 response="500"
                 service_color="salmon"
-                check_ping $host_name
+                check_ping $host_name $portno
                 check_ssh $host_name
                 check_telnet $host_name $portno
-                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color
+                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color
              fi
-        else
+        elif [[ $nodename =~ .*orca-ucp-00.* ]] ||  [[ $groupname == "UCPMasterProd" ]]
+        then
+             httpsurl="https://${url}/_ping"
+             check_controller_https_ping $httpsurl
+             check_dockerPS $host_name
+             check_ping $host_name $portno $overlayport
              response=$(wget --secure-protocol=TLSv1  --timeout=20 --tries=1 --no-check-certificate $url:$portno 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
+             if [ "$response" != "200" ] || [[ "service_status" == "DOWN" ]] || [[ "node_status" == "DOWN" ]] || [[ "ssh_status" == "DOWN" ]] || [[ "telnet_status" == "DOWN" ]] || [[ "controller_status" == "DOWN" ]]
+             then
+                  generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $controller_status $controller_color
+             fi
+             generate_html $service_color $url $nodename $container_count
+             continue 
+        else
+             check_dockerPS $host_name
+             if [[ $dockerps_status == "DOWN" ]]; then
+                 check_ping $host_name $portno $overlayport
+                 response=$(wget --secure-protocol=TLSv1  --timeout=20 --tries=1 --no-check-certificate $url:$portno 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
+                 generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color
+                 generate_html $service_color $url $nodename $container_count
+                 continue
+             else
+                 response=$(wget --secure-protocol=TLSv1  --timeout=20 --tries=1 --no-check-certificate $url:$portno 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
+             fi
+             # generate_html $service_color $url $nodename $container_count
+             # 
         fi
         if [ "$response" == "200" ]; then 
                 service_color="green"
                 service_status="UP"
                 node_status="UP"
-                node_color="green"
+                node_color="lime"
+                # check_ping $host_name $portno
+                # if [ "$dockerps_status" == "DOWN" ] | [ "$ssh_status" = "DOWN" ] |  [ "$telnet_status" = "DOWN" ]
+                # then
+                # generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color
+                # fi
                 ssh_status="UP"
-                ssh_color="green"
+                ssh_color="lime"
                 telnet_status="UP"
-                telnet_color="green"
+                telnet_color="lime"
+                port_status="UP"
+                port_color="lime"
         elif [ "$response" == "302" ]; then
                 service_color="lightBlue"
                 service_status="REDIRECT"
                 node_status="UP"
-                node_color="green"
+                node_color="lime"
+                check_ping $host_name $portno $overlayport
                 ssh_status="UP"
-                ssh_color="green"
+                ssh_color="lime"
                 telnet_status="UP"
-                telnet_color="green"
+                telnet_color="lime"
         elif [ "$response" == "403" ]; then
                 service_color="lightBlue"
                 service_status="FILTER?"
-                node_status="UP"
-                service_status="UP"
-                ssh_status="UP"
-                port_status="UP"
-                check_ping $host_name $portno # returns node_status ping_color
+                # node_status="UP"
+                # node_color="lime"
+                # ssh_status="UP"
+                # ssh_color="lime"
+                # port_status="UP"
+                # port_color="lime"
+                # telnet_status="UP"
+                # telnet_color="lime"
+                check_ping $host_name $portno $overlayport # returns node_status ping_color
                 # check_ssh $host_name # returns ssh_status ssh_color
                 # check_telnet $host_name $portno # returns telnet_status telnet_color
-                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color 
+                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color
         elif [ "$response" == "404" ]; then
                 # check_ping $url
                 service_color="salmon"
                 status="NOT_FOUND"
                 node_status="UP"
                 service_status="NOT_FOUND"
-                check_ping $host_name $portno
+                check_ping $host_name $portno $overlayport
                 # check_ssh $host_name
                 # check_telnet $host_name $portno
-                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color
+                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color
         elif [ "$response" == "500" ]; then
                 # check_ping $url 
                 service_color="salmon"
                 status="500"
                 node_status="UP"
-                service_status="UP"
-                ssh_status="UP"
-                telnet_status="UP"
-                check_ping $host_name $portno
+                service_status="DOWN"
+                # ssh_status="UP"
+                # telnet_status="UP"
+                check_ping $host_name $portno $overlayport
                 # check_ssh $host_name
                 # check_telnet $host_name $portno
-                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color
+                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color
         elif [ "$response" == "EMPTY" ]; then 
                 service_color="grey"
                 node_status="N/A"
                 service_status="N/A"
                 ssh_status="N/A"
                 telnet_status="N/A"
-                check_ping $host_name $portno
+                check_ping $host_name $portno $overlayport
                 # check_ssh $host_name
                 # check_telnet $host_name $portno
         else 
@@ -386,10 +529,10 @@ getResponse(){
                 service_status="DOWN"
                 ssh_status="DOWN"
                 telnet_status="DOWN"
-                check_ping $host_name $portno
+                check_ping $host_name $portno $overlayport
                 # check_ssh $host_name
                 # check_telnet $host_name $portno
-                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color
+                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color
         fi
 
 }
@@ -403,28 +546,29 @@ getResponse(){
 #----------------------------------------------------------------------------------------------------
 for i in `cat $FILE | egrep -v '^#|^$' | cut -f1 -d';' | sort | uniq`
 do
-	rm ${i}.html  2> /dev/null
-	touch ${i}.html
-	echo "   <tr> " > $i.html
-	echo "      <th id=\"grey\" title=\"$i\">$i</th> " >> $i.html
+  rm ${i}.html  2> /dev/null
+  touch ${i}.html
+  echo "   <tr> " > $i.html
+  echo "      <th id=\"grey\" title=\"$i\">$i</th> " >> $i.html
         firstrow=0
         count=0
-	for j in `cat $FILE | egrep -v '^#|^$' | grep $i `
-	do
+  for j in `cat $FILE | egrep -v '^#|^$' | grep $i `
+  do
         groupname=`echo $j | cut -f1 -d';' `
         nodename=`echo $j | cut -f2 -d';' `
         url=`echo $j | cut -f3 -d';' `
         host_name=$url
-		    portno=`echo $j | cut -f4 -d';' `
-        priority=`echo $j | cut -f5 -d';' `
-        getResponse $groupname $nodename $url $portno $priority
+        portno=`echo $j | cut -f4 -d';' `
+        overlayport=`echo $j | cut -f5 -d';' `
+        priority=`echo $j | cut -f6 -d';' `
+        getResponse $groupname $nodename $url $portno $overlayport $priority
         count=$(( $count + 1 ))
         firstrow=$(( $firstrow + 1 ))
         if [ $firstrow -eq 21 ] && [ $count -gt 21 ]
         then
              echo "   </tr>" >> $i.html
              echo "   <tr>" >> $i.html 
-	      echo "      <th id=\"white\" ></th> " >> $i.html
+        echo "      <th id=\"white\" ></th> " >> $i.html
              count=0    ## Count is reset to 0
         elif [ $count -gt 20 ] && [ $firstrow -gt 21 ]
         then
@@ -433,7 +577,8 @@ do
              echo "      <th id=\"white\" ></th> " >> $i.html
              count=0    ## Count is reset to 0 
         fi
-        echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${nodename}</a></th> " >> $i.html
+        generate_html $service_color $url $nodename $container_count
+        # echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${nodename}-${container_count}</a></th> " >> $i.html
        
     done
     echo "   </tr>" >> $i.html
@@ -444,6 +589,7 @@ done
 #----------------------------------------
 rm index.html*  2> /dev/null
 rm ping* 2> /dev/null
+rm _ping* 2> /dev/null
 rm artifactory* 2> /dev/null
 rm ${HC_File}_latest.html 2> /dev/null
 
@@ -471,7 +617,7 @@ cat $PREHTML >> ${HEALTHCHECK}_${cur_time}
 #----------------------------------------
 for i in `cat $FILE | egrep -v '^#|^$' | cut -f1 -d';' | sort | uniq`
 do
-	cat ${i}.html >> ${HEALTHCHECK}_${cur_time}
+  cat ${i}.html >> ${HEALTHCHECK}_${cur_time}
 done
 
 
@@ -486,7 +632,7 @@ echo "<b><p><font size="4px">Report Generated on :  ${footer_time}</font></p></b
 echo "</body>" >> ${HEALTHCHECK}_${cur_time}
 echo "</html>" >> ${HEALTHCHECK}_${cur_time}
 
-cat $POSTHTML >> ${HEALTHCHECK}_${cur_time}
+# cat $POSTHTML >> ${HEALTHCHECK}_${cur_time}
 mv  ${HEALTHCHECK}_${cur_time} ${HEALTHCHECK}_${cur_time}.html
 ln -s ${HEALTHCHECK}_${cur_time}.html ${HC_File}_latest.html
 
@@ -501,7 +647,7 @@ done
 checkAlertPriority
 # sendEmail
 
-sleep 600
+sleep 200
 done
 
 echo " ----------------------------------------------------------------- " 
