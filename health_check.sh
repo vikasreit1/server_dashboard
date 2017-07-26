@@ -6,7 +6,7 @@
 # Revision: 1.0
 #-------------------------------------------------------------
 # Copy the logo into HISTORY directory
-cp Infra_engg.png HISTORY/
+
 
 # loop continuously 
 while true
@@ -598,6 +598,8 @@ rm ${HC_File}_latest.html 2> /dev/null
 # Move the old health check reports into archive
 #-------------------------------------------------
 mkdir -p HISTORY/${file_time}
+cp Infra_engg.png HISTORY/${file_time}
+
 for i in `ls ${HEALTHCHECK}_* 2>/dev/null`
 do
     mv $i HISTORY/${file_time}/ 2>/dev/null
