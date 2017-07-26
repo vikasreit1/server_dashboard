@@ -27,6 +27,11 @@
     <td>The system needs to be rebooted using ilo</td>
     <td>Use the ilo console to reboot --> Sample Login URL:  https://sv3-orca-0313e0b2.ilo.sv.splunk.com/login.html</td>
   </tr>
+  <tr>
+    <td>Node Misbehaving</td>
+    <td>Try to leave the swarm and rejoin, if that doesnt work then do a docker daemon restart</td>
+    <td>docker swarm leave, docker swarm join --token SWMTKN-1-3tyv45mbory79hjpaxq6zwu2960gfh30boigdiabh255igc2f0-3oo9fgd8cigzufuzdd2jw2v67  10.0.2.234:2377 or docker service restart / systemctl start docker</td>
+  </tr>
 </TABLE>
 <br>
 <br>
