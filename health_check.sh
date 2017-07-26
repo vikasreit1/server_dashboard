@@ -26,6 +26,7 @@ MAILFILE=maildata.txt
 WGET=/usr/local/bin/wget
 TIMEOUT=6 #Seconds
 cur_time=`date +"%m%d%y-%H%M%S"`
+file_time=`date +"%m%d%y"`
 footer_time=`date`
 LIMIT=" - "
 PREHTML=${dirpath}/prehtml_file
@@ -596,15 +597,18 @@ rm ${HC_File}_latest.html 2> /dev/null
 #-------------------------------------------------
 # Move the old health check reports into archive
 #-------------------------------------------------
-mkdir -p HISTORY
+mkdir -p HISTORY/${file_time}
 for i in `ls ${HEALTHCHECK}_* 2>/dev/null`
 do
-    mv $i HISTORY/ 2>/dev/null
+    mv $i HISTORY/${file_time}/ 2>/dev/null
 done
 
 # if [ -f ${HEALTHCHECK}_* ]; then
 #    mv ${HEALTHCHECK}_* HISTORY/
 # fi
+#---------------------------------------------------
+# Creating the Html File for the dashboard
+#---------------------------------------------------
 touch ${HEALTHCHECK}_${cur_time}
 
 #---------------------------------------
@@ -621,10 +625,10 @@ do
 done
 
 
-#---------------------------------------------------------------------------
-# Closing the HTML Tags and printing the time time this file was generated
+#----------------------------------------------------------------------
+# Closing the HTML Tags and printing the time this file was generated
 # cat $POSTHTML >> ${HEALTHCHECK}_${cur_time}
-#---------------------------------------------------------------------------
+#----------------------------------------------------------------------
 echo "</table>" >> ${HEALTHCHECK}_${cur_time}
 echo "<br>" >> ${HEALTHCHECK}_${cur_time}
 echo "<br>" >> ${HEALTHCHECK}_${cur_time}
