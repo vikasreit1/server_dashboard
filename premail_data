@@ -4,5 +4,5 @@ table#t02 {
     background-color: lightyellow;
 }
 </style><TABLE border=1>
-<TD bgcolor=peachpuff>Groupname</TD><TD bgcolor=peachpuff>Hostname</TD><TD bgcolor=peachpuff>Docker Daemon</TD><TD bgcolor=peachpuff>Wget Status</TD><TD bgcolor=peachpuff>Node Status</TD><TD bgcolor=peachpuff>Port Status</TD><TD bgcolor=peachpuff>SSH Status</TD><TD bgcolor=peachpuff>Overlay Status</TD><TD bgcolor=peachpuff>Controller PING</TD>
+<TD bgcolor=peachpuff>Groupname</TD><TD bgcolor=peachpuff>Hostname</TD><TD bgcolor=peachpuff>Docker Daemon</TD><TD bgcolor=peachpuff>Wget Status</TD><TD bgcolor=peachpuff>Node Status</TD><TD bgcolor=peachpuff>Port Status</TD><TD bgcolor=peachpuff>SSH Status</TD><TD bgcolor=peachpuff>Overlay Status</TD><TD bgcolor=peachpuff>Controller PING</TD><TD bgcolor=peachpuff>Free Memory</TD>
 <TR>

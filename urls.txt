@@ -405,13 +405,13 @@ UCPProd;sv3-orca-0409e6b1;sv3-orca-0409e6b1.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0409e6b2;sv3-orca-0409e6b2.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0409e6b3;sv3-orca-0409e6b3.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0409e6b4;sv3-orca-0409e6b4.sv.splunk.com;12376;7946;1
-UCPProd;sv3-orca-0308e5b4;sv3-orca-0308e5b4.sv.splunk.com;12376;7946;5
+UCPProd;sv3-orca-0308e5b4;sv3-orca-0308e5b4.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0308e8b1;sv3-orca-0308e8b1.sv.splunk.com;12376;7946;5
 UCPProd;sv3-orca-0313e1b3;sv3-orca-0313e1b3.sv.splunk.com;12376;7946;5
 UCPMasterProd;Master01;sv3-orca-ucp-001.sv.splunk.com;12376;7946;1
-UCPMasterProd;Master02;sv3-orca-ucp-002.sv.splunk.com;12376;7946;5
+UCPMasterProd;Master02;sv3-orca-ucp-002.sv.splunk.com;12376;7946;1
 UCPMasterProd;Master03;sv3-orca-ucp-003.sv.splunk.com;12376;7946;1
 UCPMasterProd;Master04;sv3-orca-ucp-004.sv.splunk.com;12376;7946;1
-UCPMasterProd;Master05;sv3-orca-ucp-005.sv.splunk.com;12376;7946;5
+UCPMasterProd;Master05;sv3-orca-ucp-005.sv.splunk.com;12376;7946;1
 UCPMasterProd;UCP_HTTPS;ucp.splunk.com;443;1
 
