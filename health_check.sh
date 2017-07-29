@@ -18,7 +18,7 @@ HC_File=health_chk_status
 HEALTHCHECK=${dirpath}/health_chk_status
 MAIL_FROM=SERVICES-STATUS@serverName.com
 
-MAIL_TO="vitikyalapati@splunk.com,scentoni@splunk.com,mdickey@splunk.com"
+MAIL_TO="vitikyalapati@splunk.com,scentoni@splunk.com"
 #MAIL_TO="vitikyalapati@splunk.com"
 MAIL_SUB="Servers and Services status"
 MAILFILE=maildata.txt
@@ -202,20 +202,22 @@ generateMaildata(){
    dockerps_color=${12}
    overlay_status=${13}
    overlay_color=${14}
+   freeMem_status=${15}
+   freeMem_color=${16}
    controller_status="N/A"
    controller_color="white"
    # if [ "$#" -ne 12 ]; then
    #     overlay_status=${13}
    #     overlay_color=${14}
    # fi
-   if [ "$#" -eq 16 ]; then
-       controller_status=${15}
-       controller_color=${16}
+   if [ "$#" -eq 18 ]; then
+       controller_status=${17}
+       controller_color=${18}
    fi
    mail_file=maildata.txt
    if [ "$priority" == "1" ]
    then
-        echo "<TH bgcolor=lightyellow>$groupname</TH><TH bgcolor=lightyellow>$nodename</TH><TH bgcolor=$dockerps_color>$dockerps_status</TH><TH bgcolor=salmon>DOWN</TH><TH bgcolor=$node_color>$node_status</TH><TH bgcolor=$port_color>$port_status</TH><TH bgcolor=$ssh_color>$ssh_status</TH><TH bgcolor=$overlay_color>$overlay_status</TH><TH bgcolor=$controller_color>$controller_status</TH>" >> maildata.txt
+        echo "<TH bgcolor=lightyellow>$groupname</TH><TH bgcolor=lightyellow>$nodename</TH><TH bgcolor=$dockerps_color>$dockerps_status</TH><TH bgcolor=salmon>DOWN</TH><TH bgcolor=$node_color>$node_status</TH><TH bgcolor=$port_color>$port_status</TH><TH bgcolor=$ssh_color>$ssh_status</TH><TH bgcolor=$overlay_color>$overlay_status</TH><TH bgcolor=$controller_color>$controller_status</TH><TH bgcolor=$freeMem_color>$freeMem_status</TH>" >> maildata.txt
         echo "<TR>" >> maildata.txt
    fi
 }
@@ -226,16 +228,17 @@ check_dockerPS(){
     # ssh -q root@$host_name docker ps -a --quiet 2>/dev/null
     #ssh -i ~/.ssh/id_rsa  root@sv3-orca-0409e2b2.sv.splunk.com docker ps
     # ssh -i ~/.ssh/id_rsa  root@sv3-orca-0409e2b2.sv.splunk.com docker info | grep -i running  | cut -f2 -d":"
-    container_count=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@$host_name docker info | grep Running | cut -f2 -d":")
+    ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@$host_name docker ps -a --quiet 2>/dev/null
     if [ $? -eq 0 ]
     then
+        container_count=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@$host_name docker info | grep Running | cut -f2 -d":")
         dockerps_color="lime"
         dockerps_status="UP"
     else
         dockerps_color="salmon"
         dockerps_status="DOWN"
+        container_count="0"
     fi
-
 }
 
 check_ping (){
@@ -284,13 +287,27 @@ check_ssh(){
     ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name exit
     if [ $? -eq 0 ]
     then
+        check_memory $host_name
         ssh_color="lime"
         ssh_status="UP"
     else
         ssh_color="salmon"
         ssh_status="DOWN"
+        freeMem_status="N\A"
+        freeMem_color="salmon"
     fi
+}
 
+check_memory(){
+    host_name=$1
+    freeMem_status=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name free -m | grep Mem | awk '{print ($2-$3)/1024}')
+    int_memory=$(echo $freeMem_status| cut -f1 -d"." )
+    if [ "$int_memory" -le 4 ]
+    then
+        freeMem_color="salmon"
+    else
+        freeMem_color="lime"
+    fi
 }
 
 check_telnet(){
@@ -422,7 +439,7 @@ getResponse(){
                 check_ping $host_name $portno
                 check_ssh $host_name
                 check_telnet $host_name $portno
-                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color
+                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $freeMem_status $freeMem_color
              fi
         elif [[ $nodename =~ .*orca-ucp-00.* ]] ||  [[ $groupname == "UCPMasterProd" ]]
         then
@@ -433,7 +450,7 @@ getResponse(){
              response=$(wget --secure-protocol=TLSv1  --timeout=20 --tries=1 --no-check-certificate $url:$portno 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
              if [ "$response" != "200" ] || [[ "service_status" == "DOWN" ]] || [[ "node_status" == "DOWN" ]] || [[ "ssh_status" == "DOWN" ]] || [[ "telnet_status" == "DOWN" ]] || [[ "controller_status" == "DOWN" ]]
              then
-                  generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $controller_status $controller_color
+                  generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color  $freeMem_status $freeMem_color $controller_status $controller_color
              fi
              generate_html $service_color $url $nodename $container_count
              continue 
@@ -442,7 +459,7 @@ getResponse(){
              if [[ $dockerps_status == "DOWN" ]]; then
                  check_ping $host_name $portno $overlayport
                  response=$(wget --secure-protocol=TLSv1  --timeout=20 --tries=1 --no-check-certificate $url:$portno 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
-                 generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color
+                 generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $freeMem_status $freeMem_color
                  generate_html $service_color $url $nodename $container_count
                  continue
              else
@@ -491,7 +508,7 @@ getResponse(){
                 check_ping $host_name $portno $overlayport # returns node_status ping_color
                 # check_ssh $host_name # returns ssh_status ssh_color
                 # check_telnet $host_name $portno # returns telnet_status telnet_color
-                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color
+                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $freeMem_status $freeMem_color
         elif [ "$response" == "404" ]; then
                 # check_ping $url
                 service_color="salmon"
@@ -501,7 +518,7 @@ getResponse(){
                 check_ping $host_name $portno $overlayport
                 # check_ssh $host_name
                 # check_telnet $host_name $portno
-                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color
+                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $freeMem_status $freeMem_color
         elif [ "$response" == "500" ]; then
                 # check_ping $url 
                 service_color="salmon"
@@ -513,7 +530,7 @@ getResponse(){
                 check_ping $host_name $portno $overlayport
                 # check_ssh $host_name
                 # check_telnet $host_name $portno
-                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color
+                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $freeMem_status $freeMem_color
         elif [ "$response" == "EMPTY" ]; then 
                 service_color="grey"
                 node_status="N/A"
@@ -533,7 +550,7 @@ getResponse(){
                 check_ping $host_name $portno $overlayport
                 # check_ssh $host_name
                 # check_telnet $host_name $portno
-                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color
+                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $freeMem_status $freeMem_color
         fi
 
 }
@@ -650,6 +667,7 @@ do
         rm ${i}.html
 done
 
+echo " =================   End of HC    ==================== "
 checkAlertPriority
 # sendEmail
 
