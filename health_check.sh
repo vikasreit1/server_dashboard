@@ -19,7 +19,6 @@ HEALTHCHECK=${dirpath}/health_chk_status
 MAIL_FROM=SERVICES-STATUS@serverName.com
 
 MAIL_TO="vitikyalapati@splunk.com,scentoni@splunk.com"
-#MAIL_TO="vitikyalapati@splunk.com"
 MAIL_SUB="Servers and Services status"
 MAILFILE=maildata.txt
 
@@ -369,6 +368,12 @@ check_overlay_network_port(){
       overlay_status="N/A"
   fi
 }
+
+check_disk_usage(){
+
+   avg_service_time=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name iostat -xn 5)
+}
+
 #------------------------------------
 #  Actions to be taken in case
 #  the service or the host is down
