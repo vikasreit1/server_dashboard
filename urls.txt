@@ -4,7 +4,7 @@
 # else  - red
 # green - wget green, else ping - yellow
 #----------------------------------------------------------------------
-#Groupname;InstanceName;URL;Port;Priority
+#     Groupname;InstanceName;URL;Port;OverlayPort;Priority;Label
 #----------------------------------------------------------------------
 
 UCPProd;sv3-orca-0307e1b1;sv3-orca-0307e1b1.sv.splunk.com;12376;7946;1
@@ -405,8 +405,43 @@ UCPProd;sv3-orca-0409e6b1;sv3-orca-0409e6b1.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0409e6b2;sv3-orca-0409e6b2.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0409e6b3;sv3-orca-0409e6b3.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0409e6b4;sv3-orca-0409e6b4.sv.splunk.com;12376;7946;1
+
+UCPProd;sv3-orca-0410p01;sv3-orca-0410p01.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p02;sv3-orca-0410p02.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p03;sv3-orca-0410p03.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p04;sv3-orca-0410p04.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p05;sv3-orca-0410p05.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p06;sv3-orca-0410p06.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p07;sv3-orca-0410p07.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p08;sv3-orca-0410p08.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p09;sv3-orca-0410p09.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p10;sv3-orca-0410p10.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p11;sv3-orca-0410p11.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p12;sv3-orca-0410p12.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p13;sv3-orca-0410p13.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p14;sv3-orca-0410p14.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p15;sv3-orca-0410p15.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p16;sv3-orca-0410p16.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p17;sv3-orca-0410p17.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p18;sv3-orca-0410p18.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p19;sv3-orca-0410p19.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p20;sv3-orca-0410p20.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p21;sv3-orca-0410p21.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p22;sv3-orca-0410p22.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p23;sv3-orca-0410p23.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p24;sv3-orca-0410p24.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p25;sv3-orca-0410p25.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p26;sv3-orca-0410p26.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p27;sv3-orca-0410p27.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p28;sv3-orca-0410p28.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p29;sv3-orca-0410p29.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p30;sv3-orca-0410p30.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p31;sv3-orca-0410p31.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p32;sv3-orca-0410p32.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p33;sv3-orca-0410p33.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0410p34;sv3-orca-0410p34.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0308e5b4;sv3-orca-0308e5b4.sv.splunk.com;12376;7946;1
-UCPProd;sv3-orca-0308e8b1;sv3-orca-0308e8b1.sv.splunk.com;12376;7946;5
+UCPProd;sv3-orca-0308e8b1;sv3-orca-0308e8b1.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0313e1b3;sv3-orca-0313e1b3.sv.splunk.com;12376;7946;5
 UCPMasterProd;Master01;sv3-orca-ucp-001.sv.splunk.com;12376;7946;1
 UCPMasterProd;Master02;sv3-orca-ucp-002.sv.splunk.com;12376;7946;1
