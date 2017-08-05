@@ -584,9 +584,9 @@ do
         portno=`echo $j | cut -f4 -d';' `
         overlayport=`echo $j | cut -f5 -d';' `
         priority=`echo $j | cut -f6 -d';' `
-        getResponse $groupname $nodename $url $portno $overlayport $priority
         count=$(( $count + 1 ))
         firstrow=$(( $firstrow + 1 ))
+        getResponse $groupname $nodename $url $portno $overlayport $priority
         if [ $firstrow -eq 21 ] && [ $count -gt 21 ]
         then
              echo "   </tr>" >> $i.html
