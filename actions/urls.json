@@ -1,0 +1,17 @@
+{
+ "UCPProdWorkers": {
+   "name": "Splunk Core - Contrib Modules",
+   "NodeGroup":"UCPProdWorkers",
+   "portnumber": "12376",
+   "overlayport":"7946",
+   "priority": "1",
+   "Contact": "vitikyalapati@splunk.com",
+   "components":[
+     {"hostname":"sv3-orca-0301e901b1","url":"sv3-orca-0307e001b1.sv.splunk.com"},
+     {"hostname":"sv3-orca-0301e901b1","url":"sv3-orca-0307e001b1.sv.splunk.com"},
+     {"hostname":"sv3-orca-0307e1b1","url":"sv3-orca-0307e1b1.sv.splunk.com"},
+     {"hostname":"sv3-orca-0307e1b1","url":"sv3-orca-0307e1b1.sv.splunk.com"},
+     {"hostname":"sv3-orca-0301e901b1","url":"sv3-orca-0307e001b1.sv.splunk.com"}
+   ]
+ }
+}

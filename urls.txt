@@ -377,6 +377,7 @@ UCPProd;sv3-orca-0408e8b4;sv3-orca-0408e8b4.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0408e9b1;sv3-orca-0408e9b1.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0408e9b3;sv3-orca-0408e9b3.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0408e9b4;sv3-orca-0408e9b4.sv.splunk.com;12376;7946;1
+#UCPProd;sv3-orca-0313e1b3;sv3-orca-0313e1b3.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0409e0b1;sv3-orca-0409e0b1.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0409e0b2;sv3-orca-0409e0b2.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0409e0b3;sv3-orca-0409e0b3.sv.splunk.com;12376;7946;1
@@ -440,7 +441,7 @@ UCPProd;sv3-orca-0410p31;sv3-orca-0410p31.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0410p32;sv3-orca-0410p32.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0410p33;sv3-orca-0410p33.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0410p34;sv3-orca-0410p34.sv.splunk.com;12376;7946;1
-UCPProd;sv3-orca-0308e5b4;sv3-orca-0308e5b4.sv.splunk.com;12376;7946;1
+UCPProd;sv3-orca-0308e5b4;sv3-orca-0308e5b4.sv.splunk.com;12376;7946;5
 UCPProd;sv3-orca-0308e8b1;sv3-orca-0308e8b1.sv.splunk.com;12376;7946;1
 UCPProd;sv3-orca-0313e1b3;sv3-orca-0313e1b3.sv.splunk.com;12376;7946;5
 UCPMasterProd;Master01;sv3-orca-ucp-001.sv.splunk.com;12376;7946;1
