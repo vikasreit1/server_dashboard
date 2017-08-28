@@ -1,32 +1,86 @@
-'''Example of pushing data to multiple Splunk HEC destinations'''
-from  splunk_http_event_collector import http_event_collector
+
+from splunk_http_event_collector import http_event_collector
 import json
 import requests
-
 hec = [
     {
         'itops': {
             'http_event_server': '10.209.1.13',
             'http_event_port': '5000',
-            'token': '049927E1-206F-4C16-89B5-FFDEB1283569',
-            'sourcetype': 'test_data_ucp',
+            'token': 'E2668922-C50E-40A2-BAD7-CD16B291ECAE',
+            'sourcetype': 'test_data_ucp_ucp',
             'name': 'itops'
         },
         'zero': {
             'http_event_server': 'sv3-prdv-splkx-508.sv.splunk.com',
             'http_event_port': '8088',
-            'token': 'E328574A-CAB5-4C7B-A8AC-F6D34ABC764B',
-            'sourcetype': 'test_data_ucp',
+            'token': '09D4EA62-0139-4558-B690-2EE026677619',
+            'sourcetype': 'test_data',
             'name': 'zero'
         },
     }]
-
-
+test = [{
+		"groupname": "UCPProd",
+		"priority": "1",
+		"node_status": "UP",
+		"node_color": "lime",
+		"ssh_status": "UP",
+		"ssh_color": "lime",
+		"telnet_status": "UP",
+		"telnet_color": "lime",
+		"dockerps_status": "UP",
+		"dockerps_color": "lime",
+		"overlay_status": "UP",
+		"overlay_color": "green",
+		"freeMem_status": "3",
+		"freeMem_color": "",
+		"service_status": "",
+		"service_color": "",
+		"container_count": ""
+	},
+	{
+		"groupname": "UCPProd",
+		"priority": "1",
+		"node_status": "UP",
+		"node_color": "lime",
+		"ssh_status": "UP",
+		"ssh_color": "lime",
+		"telnet_status": "UP",
+		"telnet_color": "lime",
+		"dockerps_status": "UP",
+		"dockerps_color": "lime",
+		"overlay_status": "UP",
+		"overlay_color": "green",
+		"freeMem_status": "3",
+		"freeMem_color": "UP",
+		"service_status": "green",
+		"service_color": "3",
+		"container_count": ""
+	},
+	{
+		"groupname": "UCPProd",
+		"priority": "1",
+		"node_status": "UP",
+		"node_color": "lime",
+		"ssh_status": "UP",
+		"ssh_color": "lime",
+		"telnet_status": "UP",
+		"telnet_color": "lime",
+		"dockerps_status": "UP",
+		"dockerps_color": "lime",
+		"overlay_status": "UP",
+		"overlay_color": "green",
+		"freeMem_status": "3",
+		"freeMem_color": "UP",
+		"service_status": "UP",
+		"service_color": "green",
+		"container_count": "3"
+	}
+]
 def get_sample_data():
-    results = requests.get('http://ad.api.itops.splunk.com/splunkcorp/users/nlowe')
+    results = requests.get('http://ad.api.itops.splunk.com/splunkcorp/users/peterc')
     results_dict = json.loads(results.text)
     return results_dict
-
 def splunk_data():
     hec_connection_list = []
     for hec_profile in hec:
@@ -36,16 +90,11 @@ def splunk_data():
                                                   token=hec_values['token'],
                                                   sourcetype=hec_values['sourcetype'])
             hec_connection_list.append(hec_connection)
-
-    for key,value in get_sample_data().items():
-        data_to_send = {}
-        data_to_send[key]=value
+    for data in test:
         payload = {}
-        payload.update({"event": json.dumps(data_to_send)})
+        payload.update({"event": json.dumps(data)})
         for hec_connection in hec_connection_list:
             hec_connection.batchEvent(payload)
-    for hec_connection in hec_connection_list:
-        hec_connection.flushBatch()
-
+            hec_connection.flushBatch()
 if __name__ == '__main__':
     splunk_data()
