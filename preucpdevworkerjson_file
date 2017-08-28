@@ -1,0 +1,7 @@
+ "UCPProdWorkers": {
+   "name": "UCP Workers",
+   "NodeGroup":"UCPProdWorkers",
+   "portnumber": "12376",
+   "priority": "1",
+   "Contact": "vitikyalapati@splunk.com",
+   "components":[

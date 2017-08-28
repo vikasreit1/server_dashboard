@@ -1,0 +1,7 @@
+  "UCPMaster": {
+   "name": "UCP Dev Masters",
+   "NodeGroup":"UCPProdMasters",
+   "portnumber": "12376",
+   "priority": "1",
+   "Contact": "vitikyalapati@splunk.com",
+   "components":[
