@@ -17,7 +17,8 @@ HC_File=health_chk_status
 HEALTHCHECK=${dirpath}/health_chk_status
 MAIL_FROM=SERVICES-STATUS@serverName.com
 
-MAIL_TO="vitikyalapati@splunk.com,scentoni@splunk.com"
+#MAIL_TO="vitikyalapati@splunk.com,scentoni@splunk.com"
+MAIL_TO="vitikyalapati@splunk.com"
 MAIL_SUB="Servers and Services status"
 MAILFILE=maildata.txt
 
@@ -29,6 +30,17 @@ footer_time=`date`
 LIMIT=" - "
 PREHTML=${dirpath}/prehtml_file
 POSTHTML=${dirpath}/posthtml_file
+
+PREJSON=${dirpath}/prejson_file
+POSTJSON=${dirpath}/postjson_file
+
+PreUCPDEVWorkerPROPSJSON=${dirpath}/preucpdevworkerjson_file
+PostUCPDEVWorkerPROPSJSON=${dirpath}/postucpdevworkerjson_file
+
+PreUCPDEVMasterPROPSJSON=${dirpath}/preucpdevmasterjson_file
+PostUCPDEVMasterPROPSJSON=${dirpath}/postucpdevmasterjson_file
+FINAL_JSON=${dirpath}/total_json
+
 
 OUTPUTDIR="/var/tmp/OUTPUT$$"
 TEMPDIR="/var/tmp/TEMP$$"
@@ -406,10 +418,10 @@ generate_html(){
 }
 
 generate_json(){
-  service_color=$1
-  url=$2
-  nodename=$3 
-  container_count=$4
+   service_color=$1
+   url=$2
+   nodename=$3 
+   container_count=$4
 
    groupname=$1
    nodename=$2
@@ -444,13 +456,13 @@ generate_json(){
        controller_status=${20}
        controller_color=${21}
    fi
+
   if [[ $url == "ucp.splunk.com" ]]
   then
-      echo "\"groupname\":\"$groupname\",\"priority\":\"$priority\",\"node_status\":\"$node_status\",\"node_color\":\"$node_color\",\"ssh_status\":\"$ssh_status\",\"ssh_color\":\"$ssh_color\",\"telnet_status\":\"$telnet_status\",\"telnet_color\":\"$telnet_color\",\"dockerps_status\":\"$dockerps_status\",\"dockerps_color\",:\"$dockerps_color\",\"overlay_status\":\"$overlay_status\",\"overlay_color\":\"$overlay_color\":\"freeMem_status\":\"$freeMem_status\",\"freeMem_color\":\"$freeMem_color\",\"service_status\":\"$service_status\",\"service_color\":\"$service_color\",\"container_count\":\"$container_count\"} " >> ${i}_json
+      echo "{  \"host_name\":\"$nodename\",\"groupname\":\"$groupname\",\"priority\":\"$priority\",\"node_status\":\"$node_status\",\"node_color\":\"$node_color\",\"ssh_status\":\"$ssh_status\",\"ssh_color\":\"$ssh_color\",\"telnet_status\":\"$telnet_status\",\"telnet_color\":\"$telnet_color\",\"dockerps_status\":\"$dockerps_status\",\"dockerps_color\":\"$dockerps_color\",\"overlay_status\":\"$overlay_status\",\"overlay_color\":\"$overlay_color\",\"freeMem_status\":\"$freeMem_status\",\"freeMem_color\":\"$freeMem_color\",\"service_status\":\"$service_status\",\"service_color\":\"$service_color\",\"container_count\":\"$container_count\"} " >> ${i}_json
   else
-      echo "  {   \"groupname\":\"$groupname\",\"priority\":\"$priority\",\"node_status\":\"$node_status\",\"node_color\":\"$node_color\",\"ssh_status\":\"$ssh_status\",\"ssh_color\":\"$ssh_color\",\"telnet_status\":\"$telnet_status\",\"telnet_color\":\"$telnet_color\",\"dockerps_status\":\"$dockerps_status\",\"dockerps_color\",:\"$dockerps_color\",\"overlay_status\":\"$overlay_status\",\"overlay_color\":\"$overlay_color\":\"freeMem_status\":\"$freeMem_status\",\"freeMem_color\":\"$freeMem_color\",\"service_status\":\"$service_status\",\"service_color\":\"$service_color\",\"container_count\":\"$container_count\" }" >> ${i}_json
+      echo "  {  \"host_name\":\"$nodename\",\"groupname\":\"$groupname\",\"priority\":\"$priority\",\"node_status\":\"$node_status\",\"node_color\":\"$node_color\",\"ssh_status\":\"$ssh_status\",\"ssh_color\":\"$ssh_color\",\"telnet_status\":\"$telnet_status\",\"telnet_color\":\"$telnet_color\",\"dockerps_status\":\"$dockerps_status\",\"dockerps_color\":\"$dockerps_color\",\"overlay_status\":\"$overlay_status\",\"overlay_color\":\"$overlay_color\",\"freeMem_status\":\"$freeMem_status\",\"freeMem_color\":\"$freeMem_color\",\"service_status\":\"$service_status\",\"service_color\":\"$service_color\",\"container_count\":\"$container_count\" }," >> ${i}_json
   fi
-
 }
 
 #--------------------------------------
@@ -677,6 +689,8 @@ do
     mv $i HISTORY/${file_time}/ 2>/dev/null
 done
 
+mv ${FINAL_JSON}  HISTORY/${file_time}/${FINAL_JSON}_${cur_time}  2>/dev/null
+
 # if [ -f ${HEALTHCHECK}_* ]; then
 #    mv ${HEALTHCHECK}_* HISTORY/
 # fi
@@ -685,6 +699,9 @@ done
 #---------------------------------------------------
 touch ${HEALTHCHECK}_${cur_time}
 touch ${HEALTHCHECK}_${cur_time}_json
+touch total_json
+# Empty it if anything
+> ${FINAL_JSON}
 
 #---------------------------------------
 # Echo the output into the final file
@@ -700,13 +717,60 @@ do
   cat ${i}.html >> ${HEALTHCHECK}_${cur_time}
 done
 
+#-------------------------------------------
+# JSON File Preparation
+#-------------------------------------------
+cat $PREJSON >> $FINAL_JSON
+cat $PreUCPDEVWorkerPROPSJSON >> $FINAL_JSON
+cat UCPProd_json >> $FINAL_JSON
+#--------------------------------------------------
+#  Remove the final "," on the last line
+#  Sanitize
+#--------------------------------------------------
+sed -ie '/^\s*$/d' $FINAL_JSON
+sed -ie '$s/,$//' $FINAL_JSON
+
+#--------------------
+# Close the Json
+#--------------------
+cat $PostUCPDEVWorkerPROPSJSON >> $FINAL_JSON
+
+#-------------------------------
+# Insert UCP Master JSON status
+#-------------------------------
+cat $PreUCPDEVMasterPROPSJSON >> $FINAL_JSON
+cat UCPMasterProd_json >> $FINAL_JSON
+#--------------------------------------------------
+#  Remove the final "," on the last line
+#  Sanitize
+#--------------------------------------------------
+sed -ie '/^\s*$/d' $FINAL_JSON
+sed -ie '$s/,$//' $FINAL_JSON
+
+#--------------------
+# Close the Json
+#--------------------
+cat $PostUCPDEVMasterPROPSJSON >> $FINAL_JSON
+
+#--------------------------------
+# Sanitize the end of the file
+#--------------------------------
+sed -ie '/^\s*$/d' $FINAL_JSON
+sed -ie '$s/,$//' $FINAL_JSON
+
+#--------------------
+#  Close the JSON
+#--------------------
+cat $POSTJSON >> $FINAL_JSON
+
+###########  Use based on the use case
 #-----------------------------------------
 # Get the output from all the group files
 #-----------------------------------------
-for i in `cat $FILE | egrep -v '^#|^$' | cut -f1 -d';' | sort | uniq`
-do
-  cat ${i}_json >> ${HEALTHCHECK}_${cur_time}_json
-done
+# for i in `cat $FILE | egrep -v '^#|^$' | cut -f1 -d';' | sort | uniq`
+# do
+#   cat ${i}_json >> ${HEALTHCHECK}_${cur_time}_json
+# done
 
 
 #----------------------------------------------------------------------
@@ -738,6 +802,7 @@ echo " =================   End of HC    ==================== "
 checkAlertPriority
 # sendEmail
 
+/usr/bin/python test_spunk_hec.py UCPProd_json
 sleep 200
 done
 
