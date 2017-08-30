@@ -1,0 +1,25 @@
+{
+ "UCPProdWorkers": {
+   "name": "UCP Workers",
+   "NodeGroup":"UCPProdWorkers",
+   "portnumber": "12376",
+   "priority": "1",
+   "Contact": "vitikyalapati@splunk.com",
+   "components":[
+  {  "host_name":"sv3-orca-0307e1b1","groupname":"UCPProd","priority":"1","node_status":"UP","node_color":"lime","ssh_status":"UP","ssh_color":"lime","telnet_status":"UP","telnet_color":"lime","dockerps_status":"UP","dockerps_color":"lime","overlay_status":"UP","overlay_color":"lime","freeMem_status":"30.0137","freeMem_color":"lime","service_status":"UP","service_color":"green","container_count":"3" },
+  {  "host_name":"sv3-orca-0307e1b2","groupname":"UCPProd","priority":"1","node_status":"UP","node_color":"lime","ssh_status":"UP","ssh_color":"lime","telnet_status":"UP","telnet_color":"lime","dockerps_status":"UP","dockerps_color":"lime","overlay_status":"UP","overlay_color":"lime","freeMem_status":"30.0137","freeMem_color":"lime","service_status":"UP","service_color":"green","container_count":"4" },
+  {  "host_name":"sv3-orca-0307e1b3","groupname":"UCPProd","priority":"1","node_status":"UP","node_color":"lime","ssh_status":"UP","ssh_color":"lime","telnet_status":"UP","telnet_color":"lime","dockerps_status":"UP","dockerps_color":"lime","overlay_status":"UP","overlay_color":"lime","freeMem_status":"30.0137","freeMem_color":"lime","service_status":"UP","service_color":"green","container_count":"4" }
+   ]
+ },
+  "UCPMaster": {
+   "name": "UCP Dev Masters",
+   "NodeGroup":"UCPProdMasters",
+   "portnumber": "12376",
+   "priority": "1",
+   "Contact": "vitikyalapati@splunk.com",
+   "components":[
+  {  "host_name":"Master04","groupname":"UCPMasterProd","priority":"1","node_status":"UP","node_color":"lime","ssh_status":"UP","ssh_color":"lime","telnet_status":"UP","telnet_color":"lime","dockerps_status":"UP","dockerps_color":"lime","overlay_status":"UP","overlay_color":"lime","freeMem_status":"30.0557","freeMem_color":"lime","service_status":"UP","service_color":"green","container_count":"11" },
+  {  "host_name":"Master04","groupname":"UCPMasterProd","priority":"1","node_status":"UP","node_color":"lime","ssh_status":"UP","ssh_color":"lime","telnet_status":"UP","telnet_color":"lime","dockerps_status":"UP","dockerps_color":"lime","overlay_status":"UP","overlay_color":"lime","freeMem_status":"30.0137","freeMem_color":"lime","service_status":"UP","service_color":"green","container_count":"11" }
+   ]
+ }
+}
