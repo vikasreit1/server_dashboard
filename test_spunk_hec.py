@@ -15,7 +15,7 @@ hec = [
 			'sourcetype': 'test_data_ucp',
 			'name': 'itops'
 		},
-		'zero': {
+		'zhttps://nlowe@git.splunk.com/scm/~vitikyalapati/health-check.gitero': {
 			'http_event_server': 'sv3-prdv-splkx-508.sv.splunk.com',
 			'http_event_port': '8088',
 			'token': '09D4EA62-0139-4558-B690-2EE026677619',
