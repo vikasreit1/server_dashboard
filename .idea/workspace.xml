@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d178ea07-7e0b-411d-8372-d843d848c5e5" name="Default" comment="" />
+    <list default="true" id="d178ea07-7e0b-411d-8372-d843d848c5e5" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/total_json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/postjson_file" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/postucpdevmasterjson_file" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/postucpdevworkerjson_file" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/prejson_file" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/preucpdevmasterjson_file" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/preucpdevworkerjson_file" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/health_check_json.sh" afterPath="$PROJECT_DIR$/health_check_json.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test_spunk_hec.py" afterPath="$PROJECT_DIR$/test_spunk_hec.py" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -28,8 +40,8 @@
       <file leaf-file-name="health_check_json.sh" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/health_check_json.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="21">
-              <caret line="85" column="25" lean-forward="false" selection-start-line="85" selection-start-column="25" selection-end-line="85" selection-end-column="25" />
+            <state relative-caret-position="273">
+              <caret line="97" column="25" lean-forward="false" selection-start-line="97" selection-start-column="25" selection-end-line="97" selection-end-column="25" />
               <folding />
             </state>
           </provider>
@@ -38,8 +50,8 @@
       <file leaf-file-name="test_spunk_hec.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test_spunk_hec.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="447">
-              <caret line="140" column="39" lean-forward="true" selection-start-line="140" selection-start-column="39" selection-end-line="140" selection-end-column="39" />
+            <state relative-caret-position="412">
+              <caret line="146" column="20" lean-forward="false" selection-start-line="146" selection-start-column="20" selection-end-line="146" selection-end-column="20" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -313,14 +325,20 @@
       <option name="project" value="LOCAL" />
       <updated>1504046276311</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="updated to support payload / flattening coming from health checks">
+      <created>1504053810346</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1504053810346</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="0" width="1922" height="1053" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18303095" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18303095" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28416485" sideWeight="0.5203337" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -353,7 +371,9 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="added splunk http event collect class with example" />
     <MESSAGE value="updated to support payload / flattening coming from health checks" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated to support payload / flattening coming from health checks" />
+    <MESSAGE value="flattened json&#10;extracted out components" />
+    <MESSAGE value="flattend json&#10;removed component nesting" />
+    <option name="LAST_COMMIT_MESSAGE" value="flattend json&#10;removed component nesting" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -384,13 +404,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/test_spunk_hec.py</url>
-          <line>133</line>
+          <line>11</line>
           <option name="timeStamp" value="13" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/test_spunk_hec.py</url>
-          <line>136</line>
-          <option name="timeStamp" value="14" />
         </line-breakpoint>
       </breakpoints>
       <option name="time" value="15" />
@@ -689,8 +704,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/health_check_json.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="21">
-          <caret line="85" column="25" lean-forward="false" selection-start-line="85" selection-start-column="25" selection-end-line="85" selection-end-column="25" />
+        <state relative-caret-position="273">
+          <caret line="97" column="25" lean-forward="false" selection-start-line="97" selection-start-column="25" selection-end-line="97" selection-end-column="25" />
           <folding />
         </state>
       </provider>
@@ -705,8 +720,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/test_spunk_hec.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="447">
-          <caret line="140" column="39" lean-forward="true" selection-start-line="140" selection-start-column="39" selection-end-line="140" selection-end-column="39" />
+        <state relative-caret-position="412">
+          <caret line="146" column="20" lean-forward="false" selection-start-line="146" selection-start-column="20" selection-end-line="146" selection-end-column="20" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
