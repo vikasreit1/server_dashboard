@@ -12,7 +12,7 @@ while true
 do
 
 dirpath=`pwd`
-FILE=${dirpath}/test_urls.txt
+FILE=${dirpath}/urls.txt
 HC_File=health_chk_status
 HEALTHCHECK=${dirpath}/health_chk_status
 MAIL_FROM=SERVICES-STATUS@serverName.com
@@ -302,7 +302,7 @@ check_ssh(){
     else
         ssh_color="salmon"
         ssh_status="DOWN"
-        freeMem_status="N\A"
+        freeMem_status="N-A"
         freeMem_color="salmon"
     fi
 }
@@ -460,7 +460,7 @@ generate_json(){
 
   if [[ $url == "ucp.splunk.com" ]]
   then
-      echo "{  \"host_name\":\"$nodename\",\"groupname\":\"$groupname\",\"priority\":\"$priority\",\"node_status\":\"$node_status\",\"node_color\":\"$node_color\",\"ssh_status\":\"$ssh_status\",\"ssh_color\":\"$ssh_color\",\"telnet_status\":\"$telnet_status\",\"telnet_color\":\"$telnet_color\",\"dockerps_status\":\"$dockerps_status\",\"dockerps_color\":\"$dockerps_color\",\"overlay_status\":\"$overlay_status\",\"overlay_color\":\"$overlay_color\",\"freeMem_status\":\"$freeMem_status\",\"freeMem_color\":\"$freeMem_color\",\"service_status\":\"$service_status\",\"service_color\":\"$service_color\",\"container_count\":\"$container_count\"} " >> ${i}_json
+      echo "{  \"host_name\":\"$nodename\",\"groupname\":\"$groupname\",\"priority\":\"$priority\",\"node_status\":\"$node_status\",\"node_color\":\"$node_color\",\"ssh_status\":\"$ssh_status\",\"ssh_color\":\"$ssh_color\",\"telnet_status\":\"$telnet_status\",\"telnet_color\":\"$telnet_color\",\"dockerps_status\":\"$dockerps_status\",\"dockerps_color\":\"$dockerps_color\",\"overlay_status\":\"$overlay_status\",\"overlay_color\":\"$overlay_color\",\"freeMem_status\":\"$freeMem_status\",\"freeMem_color\":\"$freeMem_color\",\"service_status\":\"$service_status\",\"service_color\":\"$service_color\",\"container_count\":\"$container_count\"}, " >> ${i}_json
   else
       echo "  {  \"host_name\":\"$nodename\",\"groupname\":\"$groupname\",\"priority\":\"$priority\",\"node_status\":\"$node_status\",\"node_color\":\"$node_color\",\"ssh_status\":\"$ssh_status\",\"ssh_color\":\"$ssh_color\",\"telnet_status\":\"$telnet_status\",\"telnet_color\":\"$telnet_color\",\"dockerps_status\":\"$dockerps_status\",\"dockerps_color\":\"$dockerps_color\",\"overlay_status\":\"$overlay_status\",\"overlay_color\":\"$overlay_color\",\"freeMem_status\":\"$freeMem_status\",\"freeMem_color\":\"$freeMem_color\",\"service_status\":\"$service_status\",\"service_color\":\"$service_color\",\"container_count\":\"$container_count\",\"contact\":\"$contact_name\" }," >> ${i}_json
   fi
