@@ -1,11 +1,9 @@
 import collections
 import sys
 from pprint import pprint
-
 from splunk_http_event_collector import http_event_collector
 import json
 import requests
-
 hec = [
 	{
 		'itops': {
@@ -81,22 +79,16 @@ test = [{
 		"container_count": "3"
 	}
 ]
-
-
 def get_sample_data():
 	results = requests.get('http://ad.api.itops.splunk.com/splunkcorp/users/peterc')
 	results_dict = json.loads(results.text)
 	return results_dict
-
-
 def read_file(filename):
 	with open(filename, 'r') as file:
 		file_data = file.read()
 		file_dict = json.loads(file_data)
-	pprint(file_data)
+	pprint(file_dict,  width=1)
 	splunk_data(file_dict)
-
-
 def flatten(d, parent_key='', sep='_'):
 	items = []
 	for k, v in d.items():
@@ -109,8 +101,6 @@ def flatten(d, parent_key='', sep='_'):
 				key_name = new_key.replace('perf_perf_', 'perf_')
 				items.append((key_name.lower(), v.lower()))
 	return dict(items)
-
-
 def splunk_data(file_dict):
 	hec_connection_list = []
 	for hec_profile in hec:
@@ -139,9 +129,7 @@ def splunk_data(file_dict):
 				hec_connection.flushBatch()
 		for hec_connection in hec_connection_list:
 			hec_connection.flushBatch()
-
-
 if __name__ == '__main__':
-	filename=sys.argv[1]
-	# filename = 'health_json.json'
+	# filename=sys.argv[1]
+	filename = 'total_json'
 	read_file(filename)
