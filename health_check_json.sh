@@ -12,7 +12,7 @@ while true
 do
 
 dirpath=`pwd`
-FILE=${dirpath}/urls.txt
+FILE=${dirpath}/test_urls.txt
 HC_File=health_chk_status
 HEALTHCHECK=${dirpath}/health_chk_status
 MAIL_FROM=SERVICES-STATUS@serverName.com
@@ -213,7 +213,7 @@ generateMaildata(){
    overlay_color=${14}
    freeMem_status=${15}
    freeMem_color=${16}
-   controller_status="N/A"
+   controller_status="N-A"
    controller_color="white"
    # if [ "$#" -ne 12 ]; then
    #     overlay_status=${13}
@@ -375,7 +375,7 @@ check_overlay_network_port(){
       fi
   else
       overlay_color="white"
-      overlay_status="N/A"
+      overlay_status="N-A"
   fi
 }
 
@@ -447,7 +447,7 @@ generate_json(){
    service_color=${18}
    container_count=${19}
    contact_name=${20}
-   controller_status="N/A"
+   controller_status="N-A"
    controller_color="white"
    # if [ "$#" -ne 12 ]; then
    #     overlay_status=${13}
@@ -599,10 +599,10 @@ getResponse(){
                 generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $freeMem_status $freeMem_color
         elif [ "$response" == "EMPTY" ]; then 
                 service_color="grey"
-                node_status="N/A"
-                service_status="N/A"
-                ssh_status="N/A"
-                telnet_status="N/A"
+                node_status="N-A"
+                service_status="N-A"
+                ssh_status="N-A"
+                telnet_status="N-A"
                 check_ping $host_name $portno $overlayport
                 # check_ssh $host_name
                 # check_telnet $host_name $portno
