@@ -418,10 +418,10 @@ generate_html(){
 }
 
 generate_json(){
-   service_color=$1
-   url=$2
-   nodename=$3 
-   container_count=$4
+   # service_color=$1
+   # url=$2
+   # nodename=$3 
+   # container_count=$4
 
    groupname=$1
    nodename=$2
@@ -446,22 +446,23 @@ generate_json(){
    service_status=${17}
    service_color=${18}
    container_count=${19}
+   contact_name=${20}
    controller_status="N/A"
    controller_color="white"
    # if [ "$#" -ne 12 ]; then
    #     overlay_status=${13}
    #     overlay_color=${14}
    # fi
-   if [ "$#" -eq 21 ]; then
-       controller_status=${20}
-       controller_color=${21}
+   if [ "$#" -eq 22 ]; then
+       controller_status=${21}
+       controller_color=${22}
    fi
 
   if [[ $url == "ucp.splunk.com" ]]
   then
       echo "{  \"host_name\":\"$nodename\",\"groupname\":\"$groupname\",\"priority\":\"$priority\",\"node_status\":\"$node_status\",\"node_color\":\"$node_color\",\"ssh_status\":\"$ssh_status\",\"ssh_color\":\"$ssh_color\",\"telnet_status\":\"$telnet_status\",\"telnet_color\":\"$telnet_color\",\"dockerps_status\":\"$dockerps_status\",\"dockerps_color\":\"$dockerps_color\",\"overlay_status\":\"$overlay_status\",\"overlay_color\":\"$overlay_color\",\"freeMem_status\":\"$freeMem_status\",\"freeMem_color\":\"$freeMem_color\",\"service_status\":\"$service_status\",\"service_color\":\"$service_color\",\"container_count\":\"$container_count\"} " >> ${i}_json
   else
-      echo "  {  \"host_name\":\"$nodename\",\"groupname\":\"$groupname\",\"priority\":\"$priority\",\"node_status\":\"$node_status\",\"node_color\":\"$node_color\",\"ssh_status\":\"$ssh_status\",\"ssh_color\":\"$ssh_color\",\"telnet_status\":\"$telnet_status\",\"telnet_color\":\"$telnet_color\",\"dockerps_status\":\"$dockerps_status\",\"dockerps_color\":\"$dockerps_color\",\"overlay_status\":\"$overlay_status\",\"overlay_color\":\"$overlay_color\",\"freeMem_status\":\"$freeMem_status\",\"freeMem_color\":\"$freeMem_color\",\"service_status\":\"$service_status\",\"service_color\":\"$service_color\",\"container_count\":\"$container_count\" }," >> ${i}_json
+      echo "  {  \"host_name\":\"$nodename\",\"groupname\":\"$groupname\",\"priority\":\"$priority\",\"node_status\":\"$node_status\",\"node_color\":\"$node_color\",\"ssh_status\":\"$ssh_status\",\"ssh_color\":\"$ssh_color\",\"telnet_status\":\"$telnet_status\",\"telnet_color\":\"$telnet_color\",\"dockerps_status\":\"$dockerps_status\",\"dockerps_color\":\"$dockerps_color\",\"overlay_status\":\"$overlay_status\",\"overlay_color\":\"$overlay_color\",\"freeMem_status\":\"$freeMem_status\",\"freeMem_color\":\"$freeMem_color\",\"service_status\":\"$service_status\",\"service_color\":\"$service_color\",\"container_count\":\"$container_count\",\"contact\":\"$contact_name\" }," >> ${i}_json
   fi
 }
 
@@ -802,7 +803,7 @@ echo " =================   End of HC    ==================== "
 checkAlertPriority
 # sendEmail
 
-/usr/bin/python test_spunk_hec.py UCPProd_json
+/usr/bin/python test_spunk_hec.py total_json
 sleep 200
 done
 
