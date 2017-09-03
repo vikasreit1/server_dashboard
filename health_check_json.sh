@@ -458,9 +458,12 @@ generate_json(){
        controller_color=${22}
    fi
 
+#---------------------------------------------------
+# NOTE : Make sure that there are no unwanted spaces
+#---------------------------------------------------
   if [[ $url == "ucp.splunk.com" ]]
   then
-      echo "{  \"host_name\":\"$nodename\",\"groupname\":\"$groupname\",\"priority\":\"$priority\",\"node_status\":\"$node_status\",\"node_color\":\"$node_color\",\"ssh_status\":\"$ssh_status\",\"ssh_color\":\"$ssh_color\",\"telnet_status\":\"$telnet_status\",\"telnet_color\":\"$telnet_color\",\"dockerps_status\":\"$dockerps_status\",\"dockerps_color\":\"$dockerps_color\",\"overlay_status\":\"$overlay_status\",\"overlay_color\":\"$overlay_color\",\"freeMem_status\":\"$freeMem_status\",\"freeMem_color\":\"$freeMem_color\",\"service_status\":\"$service_status\",\"service_color\":\"$service_color\",\"container_count\":\"$container_count\"}, " >> ${i}_json
+      echo "{  \"host_name\":\"$nodename\",\"groupname\":\"$groupname\",\"priority\":\"$priority\",\"node_status\":\"$node_status\",\"node_color\":\"$node_color\",\"ssh_status\":\"$ssh_status\",\"ssh_color\":\"$ssh_color\",\"telnet_status\":\"$telnet_status\",\"telnet_color\":\"$telnet_color\",\"dockerps_status\":\"$dockerps_status\",\"dockerps_color\":\"$dockerps_color\",\"overlay_status\":\"$overlay_status\",\"overlay_color\":\"$overlay_color\",\"freeMem_status\":\"$freeMem_status\",\"freeMem_color\":\"$freeMem_color\",\"service_status\":\"$service_status\",\"service_color\":\"$service_color\",\"container_count\":\"$container_count\"}," >> ${i}_json
   else
       echo "  {  \"host_name\":\"$nodename\",\"groupname\":\"$groupname\",\"priority\":\"$priority\",\"node_status\":\"$node_status\",\"node_color\":\"$node_color\",\"ssh_status\":\"$ssh_status\",\"ssh_color\":\"$ssh_color\",\"telnet_status\":\"$telnet_status\",\"telnet_color\":\"$telnet_color\",\"dockerps_status\":\"$dockerps_status\",\"dockerps_color\":\"$dockerps_color\",\"overlay_status\":\"$overlay_status\",\"overlay_color\":\"$overlay_color\",\"freeMem_status\":\"$freeMem_status\",\"freeMem_color\":\"$freeMem_color\",\"service_status\":\"$service_status\",\"service_color\":\"$service_color\",\"container_count\":\"$container_count\",\"contact\":\"$contact_name\" }," >> ${i}_json
   fi
@@ -701,7 +704,10 @@ mv ${FINAL_JSON}  HISTORY/${file_time}/${FINAL_JSON}_${cur_time}  2>/dev/null
 touch ${HEALTHCHECK}_${cur_time}
 touch ${HEALTHCHECK}_${cur_time}_json
 touch total_json
-# Empty it if anything
+#---------------------------------
+# Empty it if has anything
+# All the contents of total_json
+#---------------------------------
 > ${FINAL_JSON}
 
 #---------------------------------------
@@ -718,12 +724,17 @@ do
   cat ${i}.html >> ${HEALTHCHECK}_${cur_time}
 done
 
+#*******************************************
 #-------------------------------------------
-# JSON File Preparation
+# JSON File Preparation STARTS Here
 #-------------------------------------------
 cat $PREJSON >> $FINAL_JSON
+
+#-------------------------------------------
+# App Specific JSON appending happens here
+#-------------------------------------------
 cat $PreUCPDEVWorkerPROPSJSON >> $FINAL_JSON
-cat UCPProd_json >> $FINAL_JSON
+cat UCPProd_json >> $FINAL_JSON # This adds the actual content of json
 #--------------------------------------------------
 #  Remove the final "," on the last line
 #  Sanitize
@@ -753,12 +764,12 @@ sed -ie '$s/,$//' $FINAL_JSON
 #--------------------
 cat $PostUCPDEVMasterPROPSJSON >> $FINAL_JSON
 
+#*********************************
 #--------------------------------
 # Sanitize the end of the file
 #--------------------------------
 sed -ie '/^\s*$/d' $FINAL_JSON
 sed -ie '$s/,$//' $FINAL_JSON
-
 #--------------------
 #  Close the JSON
 #--------------------
@@ -813,7 +824,4 @@ echo " |    Start the webserver ---> python -m SimpleHTTPServer 2223 & | "
 echo " ----------------------- Access  URL ----------------------------- " 
 echo " |        localhost:2223/health_chk_status_latest.html           | "
 echo " ------------------------------------------------------------------ " 
-
-
-
 
