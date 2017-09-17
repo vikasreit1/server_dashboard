@@ -13,12 +13,14 @@ while true
 do
 
 dirpath=`pwd`
+#FILE=${dirpath}/urls.txt
 FILE=${dirpath}/urls.txt
 HC_File=health_chk_status
 HEALTHCHECK=${dirpath}/health_chk_status
 MAIL_FROM=SERVICES-STATUS@serverName.com
 
-MAIL_TO="vitikyalapati@splunk.com,scentoni@splunk.com"
+#MAIL_TO="vitikyalapati@splunk.com,scentoni@splunk.com"
+MAIL_TO="vitikyalapati@splunk.com"
 MAIL_SUB="Servers and Services status"
 MAILFILE=maildata.txt
 
@@ -398,12 +400,13 @@ generate_html(){
   service_color=$1
   url=$2
   nodename=$3 
-  container_count=$4
+  shortname=$4
+  container_count=$5
   if [[ $url == "ucp.splunk.com" ]]
   then
       echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${nodename}</a></th> " >> $i.html
   else
-      echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${nodename}-( ${container_count} )</a></th> " >> $i.html
+      echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${shortname}-( ${container_count} )</a></th> " >> $i.html
   fi
 }
 
@@ -419,6 +422,7 @@ getResponse(){
         portno=$4
         overlayport=$5
         priority=$6
+        shortname=$7
         if [[ $url == "ucp.splunk.com" ]]
         then
               url="https://ucp.splunk.com"
@@ -457,7 +461,7 @@ getResponse(){
              then
                   generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color  $freeMem_status $freeMem_color $controller_status $controller_color
              fi
-             generate_html $service_color $url $nodename $container_count
+             generate_html $service_color $url $nodename $shortname $container_count
              continue 
         else
              check_dockerPS $host_name
@@ -465,7 +469,7 @@ getResponse(){
                  check_ping $host_name $portno $overlayport
                  response=$(wget --secure-protocol=TLSv1  --timeout=20 --tries=1 --no-check-certificate $url:$portno 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
                  generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $freeMem_status $freeMem_color
-                 generate_html $service_color $url $nodename $container_count
+                 generate_html $service_color $url $nodename $shortname $container_count
                  continue
              else
                  response=$(wget --secure-protocol=TLSv1  --timeout=20 --tries=1 --no-check-certificate $url:$portno 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
@@ -584,9 +588,15 @@ do
         portno=`echo $j | cut -f4 -d';' `
         overlayport=`echo $j | cut -f5 -d';' `
         priority=`echo $j | cut -f6 -d';' `
+        if  [[ $groupname == "UCPMasterProd" ]]
+        then
+             shortname=`echo $nodename | cut -f2 -d'-' `
+        else
+             shortname=`echo $nodename | cut -f3 -d'-' `
+        fi 
         count=$(( $count + 1 ))
         firstrow=$(( $firstrow + 1 ))
-        getResponse $groupname $nodename $url $portno $overlayport $priority
+        getResponse $groupname $nodename $url $portno $overlayport $priority $shortname
         if [ $firstrow -eq 21 ] && [ $count -gt 21 ]
         then
              echo "   </tr>" >> $i.html
@@ -600,8 +610,8 @@ do
              echo "      <th id=\"white\" ></th> " >> $i.html
              count=0    ## Count is reset to 0 
         fi
-        generate_html $service_color $url $nodename $container_count
-        # echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${nodename}-${container_count}</a></th> " >> $i.html
+        generate_html $service_color $url $nodename $shortname $container_count
+        # echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${shortname}-${container_count}</a></th> " >> $i.html
        
     done
     echo "   </tr>" >> $i.html
