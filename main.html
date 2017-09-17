@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {font-family: "Lato", sans-serif;}
+
+/* Style the tab */
+div.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+div.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+div.tab button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+div.tab button.active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+//    border: 1px solid #ccc;
+    border-top: none;
+    -webkit-animation: fadeEffect 1s;
+    animation: fadeEffect 1s;
+}
+
+/* Fade in tabs */
+@-webkit-keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+</style>
+<meta http-equiv="refresh" content="60" >
+</head>
+<body>
+
+<p>Server Health Check status</p>
+
+<div class="tab">
+  <button class="tablinks" onclick="openCity(event, 'UCP-Prod')" id="defaultOpen">UCP-Prod</button>
+  <button class="tablinks" onclick="openCity(event, 'UCP-Dev')">UCP-Dev</button>
+  <button class="tablinks" onclick="openCity(event, 'Jenkins')">Jenkins</button>
+  <button class="tablinks" onclick="openCity(event, 'Bamboo')">Bamboo</button>
+  <button class="tablinks" onclick="openCity(event, 'Artifactory')">Artifactory</button>
+</div>
+
+<div id="UCP-Prod" class="tabcontent">
+  <h3>UCP-Prod</h3>
+  <p>UCP PROD</p>
+  <iframe src="/health_chk_status_latest.html" scrolling="no" onload="resizeIframe(this)"  frameborder="0" style="overflow: hidden; height: 100%; width: 100%; position: absolute;" ></iframe>
+</div>
+
+<div id="UCP-Dev" class="tabcontent">
+  <h3>UCP-Dev</h3>
+  <p>UCP Dev</p>
+  <iframe src="/ucp_dev_status.html" scrolling="no" onload="resizeIframe(this)"  frameborder="0" style="overflow: hidden; height: 100%; width: 100%; position: absolute;" ></iframe>
+</div>
+
+<div id="Jenkins" class="tabcontent">
+  <h3>Jenkins</h3>
+  <p>Jenkins Status. coming soon</p>
+  <iframe src="/artifactory_status.html" scrolling="no" onload="resizeIframe(this)"  frameborder="0" style="overflow: hidden; height: 100%; width: 100%; position: absolute;" ></iframe>
+</div>
+
+<div id="Bamboo" class="tabcontent">
+  <h3>Bamboo</h3>
+  <p>Bamboo Status. coming soon</p>
+  <iframe src="/artifactory_status.html" scrolling="no" onload="resizeIframe(this)"  frameborder="0" style="overflow: hidden; height: 100%; width: 100%; position: absolute;" ></iframe>
+</div>
+
+<div id="Artifactory" class="tabcontent">
+  <h3>Artifactory</h3>
+  <p>Content of Artifactory</p>
+  <iframe src="/artifactory_status.html" scrolling="no" onload="resizeIframe(this)"  frameborder="0" style="overflow: hidden; height: 100%; width: 100%; position: absolute;" ></iframe>
+</div>
+
+<script>
+function openCity(evt, cityName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(cityName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+
+// Get the element with id="defaultOpen" and click on it
+document.getElementById("defaultOpen").click();
+
+function resizeIframe(obj) {
+    obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+  }
+
+</script>
+
+</body>
+</html>
