@@ -623,5 +623,5 @@ UCPMasterProd;Master02;sv3-orca-ucp-002.sv.splunk.com;12376;7946;1;UCPMasterProd
 UCPMasterProd;Master03;sv3-orca-ucp-003.sv.splunk.com;12376;7946;1;UCPMasterProd
 UCPMasterProd;Master04;sv3-orca-ucp-004.sv.splunk.com;12376;7946;5;UCPMasterProd
 UCPMasterProd;Master05;sv3-orca-ucp-005.sv.splunk.com;12376;7946;5;UCPMasterProd
-UCPMasterProd;UCP_HTTPS;ucp.splunk.com;443;1;UCPMasterProd
+UCPMasterProd;UCP_HTTPS;ucp.splunk.com;443;1;UCPMasterProd;UCPMasterProd
 

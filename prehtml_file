@@ -59,6 +59,16 @@ table, th, td {
  
 }
 
+ #yellowred {
+  background-color: #FCF41F;
+  color: #000000;
+  margin: 1 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:1px;
+  border: 1px solid #C80606;
+}
+
 #lightblue {
   background-color: #ADD8E6;
   color: #000000;
