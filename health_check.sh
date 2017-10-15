@@ -13,7 +13,6 @@ while true
 do
 
 dirpath=`pwd`
-#FILE=${dirpath}/urls.txt
 FILE=${dirpath}/urls.txt
 HC_File=health_chk_status
 HEALTHCHECK=${dirpath}/health_chk_status
@@ -423,6 +422,8 @@ getResponse(){
         overlayport=$5
         priority=$6
         shortname=$7
+        firstrow=$8
+        count=$9
         if [[ $url == "ucp.splunk.com" ]]
         then
               url="https://ucp.splunk.com"
@@ -461,7 +462,20 @@ getResponse(){
              then
                   generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color  $freeMem_status $freeMem_color $controller_status $controller_color
              fi
-             generate_html $service_color $url $nodename $shortname $container_count
+             if [ $firstrow -eq 21 ] && [ $count -gt 21 ]
+                 then
+                       echo "   </tr>" >> $i.html
+                       echo "   <tr>" >> $i.html
+                       echo "      <th id=\"white\" ></th> " >> $i.html
+                       count=0    ## Count is reset to 0
+                 elif [ $count -gt 20 ] && [ $firstrow -gt 21 ]
+                 then
+                       echo "   </tr>" >> $i.html
+                       echo "   <tr>" >> $i.html
+                       echo "      <th id=\"white\" ></th> " >> $i.html
+                       count=0    ## Count is reset to 0
+                 fi
+                 generate_html $service_color $url $nodename $shortname $container_count
              continue 
         else
              check_dockerPS $host_name
@@ -469,6 +483,19 @@ getResponse(){
                  check_ping $host_name $portno $overlayport
                  response=$(wget --secure-protocol=TLSv1  --timeout=20 --tries=1 --no-check-certificate $url:$portno 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
                  generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $freeMem_status $freeMem_color
+                 if [ $firstrow -eq 21 ] && [ $count -gt 21 ]
+                 then
+                       echo "   </tr>" >> $i.html
+                       echo "   <tr>" >> $i.html
+                       echo "      <th id=\"white\" ></th> " >> $i.html
+                       count=0    ## Count is reset to 0
+                 elif [ $count -gt 20 ] && [ $firstrow -gt 21 ]
+                 then
+                       echo "   </tr>" >> $i.html
+                       echo "   <tr>" >> $i.html
+                       echo "      <th id=\"white\" ></th> " >> $i.html
+                       count=0    ## Count is reset to 0
+                 fi
                  generate_html $service_color $url $nodename $shortname $container_count
                  continue
              else
@@ -596,7 +623,7 @@ do
         fi 
         count=$(( $count + 1 ))
         firstrow=$(( $firstrow + 1 ))
-        getResponse $groupname $nodename $url $portno $overlayport $priority $shortname
+        getResponse $groupname $nodename $url $portno $overlayport $priority $shortname $firstrow $count
         if [ $firstrow -eq 21 ] && [ $count -gt 21 ]
         then
              echo "   </tr>" >> $i.html
@@ -608,7 +635,7 @@ do
              echo "   </tr>" >> $i.html
              echo "   <tr>" >> $i.html
              echo "      <th id=\"white\" ></th> " >> $i.html
-             count=0    ## Count is reset to 0 
+             count=0    ## Count is reset to 0
         fi
         generate_html $service_color $url $nodename $shortname $container_count
         # echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${shortname}-${container_count}</a></th> " >> $i.html
@@ -686,7 +713,7 @@ echo " =================   End of HC    ==================== "
 checkAlertPriority
 # sendEmail
 
-sleep 200
+sleep 400
 done
 
 echo " ----------------------------------------------------------------- " 
