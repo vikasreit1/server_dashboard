@@ -259,6 +259,7 @@ check_ping (){
         node_status="UP"
         check_ssh $host_name
         check_telnet $host_name $portno
+        # - Not doing a cpu,memory and disk check as it will be part of ssh check
         # If the arguments are not equal to 2, then its not a db node and we check the status of overlay port 
         if [ "$#" -ne 2 ]; then
           overlayport=${3}
@@ -295,6 +296,8 @@ check_ssh(){
     if [ $? -eq 0 ]
     then
         check_memory $host_name
+        check_cpu $host_name
+        check_disk $host_name
         ssh_color="lime"
         ssh_status="UP"
     else
@@ -308,13 +311,39 @@ check_ssh(){
 check_memory(){
     host_name=$1
     freeMem_status=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name free -m | grep Mem | awk '{print ($2-$3)/1024}')
+    #freeMem_percentage
+    mem_used=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name  free -m | awk 'NR==2{printf "%.2f%%\t\t", $3*100/$2 }')
     int_memory=$(echo $freeMem_status| cut -f1 -d"." )
-    if [ "$int_memory" -le 4 ]
-    then
-        freeMem_color="salmon"
-    else
-        freeMem_color="lime"
-    fi
+    # if [ "$int_memory" -le 4 ]
+    # then
+    #     freeMem_color="salmon"
+    # else
+    #     freeMem_color="lime"
+    # fi
+}
+
+check_cpu(){
+    host_name=$1
+    cpu_used=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name top -bn1 | grep load | awk '{printf "%.2f%%\t\t\n", $(NF-2)}')
+    int_cpu=$( echo $cpu_used | cut -f1 -d"." )
+    # if [ "$int_cpu" -gt 25 ]
+    # then
+    #     cpu_color="salmon"
+    # else
+    #     cpu_color="lime"
+    # fi
+}
+
+check_disk(){
+    host_name=$1
+    disk_used=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name df -h | awk '$NF=="/var/lib/docker"{printf "%s\t\t", $5}')
+    int_disk_used=$( echo $disk_used | cut -f1 -d"%" )
+    # if [ "$int_disk_used" -gt 25 ]
+    # then
+    #     disk_color="salmon"
+    # else
+    #     disk_color="lime"
+    # fi
 }
 
 check_telnet(){
@@ -379,21 +408,8 @@ check_overlay_network_port(){
   fi
 }
 
-check_cpu(){
-echo "checking cpu "
-}
 
-check_file_system(){
-
-echo "checking file system "
-}
-
-check_memory(){
-echo "checking memory "
-
-}
-
-check_disk_usage(){
+check_system_io(){
 
    avg_service_time=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name iostat -xn 5)
 }
@@ -428,10 +444,10 @@ generate_html(){
   if [[ $url == "ucp.splunk.com" ]]
   then
       # echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${nodename}</a></th> " >> $i.html
-      echo "  <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${nodename}<span class=\"$tooltiptext_color\">CPU: \"$cpu_used\" <br>Memory: \" $mem_used \"<br>Disk Space: \" $disk_used\"</span> </a></th>   "  >> $i.html
+      echo "  <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${nodename}<span class=\"$tooltiptext_color\">CPU: \"$cpu_used\" <br>Memory: \" $mem_used \"<br>Disk used: \" $disk_used\"</span> </a></th>   "  >> $i.html
   else
 #      echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target=\"_top\">${shortname}-( ${container_count} )</a></th> " >> $i.html
-      echo " <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${shortname}-( ${container_count} )<span class=\"$tooltiptext_color\">CPU: \"$cpu_used\"  <br>Memory: \" $mem_used \" <br>Disk Space: \" $disk_used\"</span> </a></th> " >> $i.html
+      echo " <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${shortname}-( ${container_count} )<span class=\"$tooltiptext_color\">CPU: \"$cpu_used\"  <br>Memory: \" $mem_used \" <br>Disk used: \" $disk_used\"</span> </a></th> " >> $i.html
   fi
 }
 
