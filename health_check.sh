@@ -52,6 +52,12 @@ HTML_FILE=$OUTPUTDIR/final_output.html
 #--------------------------------
 > alert_data.txt
 
+#------------------
+# SET Default Vars
+#------------------
+cpu_used="N/A"
+mem_used="N/A"
+disk_used="N/A"
 #--------------------------------------------------Future Support for CURL and Verbose output---------------------------------------------------------------------------
 # Curl Command
 # curl -i --ssl --connect-timeout 20 --retry 1 --retry-delay 2 --insecure https://repo.splunk.com/artifactory/api/system/ping 2>&1 | grep HTTP | tail -1 | cut -f2 -d" "
@@ -422,10 +428,10 @@ generate_html(){
   if [[ $url == "ucp.splunk.com" ]]
   then
       # echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${nodename}</a></th> " >> $i.html
-      echo "  <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${nodename}<span class=\"$tooltiptext_color\">CPU<br>Memory<br>Disk Space</span> </a></th>   "  >> $i.html
+      echo "  <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${nodename}<span class=\"$tooltiptext_color\">CPU: \"$cpu_used\" <br>Memory: \" $mem_used \"<br>Disk Space: \" $disk_used\"</span> </a></th>   "  >> $i.html
   else
 #      echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target=\"_top\">${shortname}-( ${container_count} )</a></th> " >> $i.html
-      echo " <th id="green"> <a class=\"tooltip\" href=\"$url\">${shortname}-( ${container_count} )<span class=\"$tooltiptext_color\">CPU<br>Memory<br>Disk Space</span> </a></th> " >> $i.html
+      echo " <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${shortname}-( ${container_count} )<span class=\"$tooltiptext_color\">CPU: \"$cpu_used\"  <br>Memory: \" $mem_used \" <br>Disk Space: \" $disk_used\"</span> </a></th> " >> $i.html
   fi
 }
 
