@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 150px;
+    height: 60px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 110%;
+
+    
+}
+
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent black transparent transparent;
+}
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+
+#green {
+  background-color: #15f023;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+  border: 4px solid #2FB601;
+}
+
+#grey {
+  background-color: #dfdfdf;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+  border: 4px solid #B3B6B7;
+
+}
+
+#blue {
+  background-color: #A1F9F8;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+  border: 4px solid #434CFF;
+
+}
+
+#yellow {
+  background-color: #FCF41F;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+  border: 4px solid #F4D03F;
+
+}
+
+#red {
+  background-color: #F50E0E;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+
+}
+
+ #yellowred {
+  background-color: #FCF41F;
+  color: #000000;
+  margin: 1 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:1px;
+  border: 1px solid #C80606;
+}
+
+#lightblue {
+  background-color: #ADD8E6;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+}
+
+
+#salmon {
+  background-color: #FA8072;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+  border: 5px solid #C80606;
+}
+
+#whitecell {
+  background-color: #FFF;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+  border: 4px solid #B3B6B7;
+
+}
+
+#white {
+  background-color: #FFF;
+  color: #000000;
+  margin: 0 20px 0 25px;
+  position: relative;
+  top: 5px;
+  border-radius:8px;
+
+}
+
+
+
+img {
+    position: absolute;
+    left: 30%;
+}
+
+</style>
+<meta http-equiv="refresh" content="60" >
+</head>
+<body>
+
+
+
+
+<table style="width:60%">
+   <tr>
+     <br>
+     
+     <br>
+     
+     <div class="tooltip">Hover over me
+  <span class="tooltiptext">Tooltip text</span>
+</div>
+
+
+<div class="tooltip">Hover over me
+  <span class="tooltiptext">Diskspace: 12332<br> cpu: test 2<br>memory: test3<br></span>
+</div>
+
+     <b><p id="date"></p></b>
+     <script>
+        document.getElementById("date").innerHTML = Date();
+        document.getElementById("date").style.fontSize = "20px";
+     </script>
+   </tr>
+
+   <tr>
+        <th id="grey" title="UCPMasterProd">UCPMasterProd</th>
+       
+      <th id="green"> <a class="tooltip" href="sv3-orca-001">Master01-( 0 )<span class="tooltiptext">TEST1<br>Test2<br>Test3</span> </a></th>
+      <th id="green" title="sv3-orca-ucp-002.sv.splunk.com"><a href="sv3-orca-ucp-002.sv.splunk.com" target=_top>Master02-( 11 )</a></th>
+      <th id="green" title="sv3-orca-ucp-003.sv.splunk.com"><a href="sv3-orca-ucp-003.sv.splunk.com" target=_top>Master03-( 11 )</a></th>
+      <th id="salmon" title="sv3-orca-ucp-004.sv.splunk.com"><a href="sv3-orca-ucp-004.sv.splunk.com" target=_top>Master04-( 0 )</a></th>
+      <th id="green" title="sv3-orca-ucp-005.sv.splunk.com"><a href="sv3-orca-ucp-005.sv.splunk.com" target=_top>Master05-( 11 )</a></th>
+      <th id="green" title="ucp.splunk.com"><a href="ucp.splunk.com" target=_top>UCP_HTTPS</a></th>
+   </tr>
+
+   <tr>
+      <th id="white" ></th>
+      <th id="green" title="sv3-orca-0415p09.sv.splunk.com"><a href="sv3-orca-0415p09.sv.splunk.com" target=_top>0415p09-( 2 )</a></th>
+      <th id="green" title="sv3-orca-0415p10.sv.splunk.com"><a href="sv3-orca-0415p10.sv.splunk.com" target=_top>0415p10-( 2 )</a></th>
+      <th id="green" title="sv3-orca-0415p11.sv.splunk.com"><a href="sv3-orca-0415p11.sv.splunk.com" target=_top>0415p11-( 3 )</a></th>
+      <th id="green" title="sv3-orca-0415p12.sv.splunk.com"><a href="sv3-orca-0415p12.sv.splunk.com" target=_top>0415p12-( 2 )</a></th>
+      <th id="green" title="sv3-orca-0415p17.sv.splunk.com"><a href="sv3-orca-0415p17.sv.splunk.com" target=_top>0415p17-( 2 )</a></th>
+      <th id="green" title="sv3-orca-0415p27.sv.splunk.com"><a href="sv3-orca-0415p27.sv.splunk.com" target=_top>0415p27-( 2 )</a></th>
+      <th id="green" title="sv3-orca-0415p28.sv.splunk.com"><a href="sv3-orca-0415p28.sv.splunk.com" target=_top>0415p28-( 2 )</a></th>
+      <th id="green" title="sv3-orca-0415p29.sv.splunk.com"><a href="sv3-orca-0415p29.sv.splunk.com" target=_top>0415p29-( 3 )</a></th>
+   </tr>
+   <tr>
+      <th id="white" ></th>
+      <th id="salmon" title="sv3-orca-0313e1b3.sv.splunk.com"><a href="sv3-orca-0313e1b3.sv.splunk.com" target=_top>0313e1b3-( 0 )</a></th>
+      <th id="salmon" title="sv3-orca-0308e5b4.sv.splunk.com"><a href="sv3-orca-0308e5b4.sv.splunk.com" target=_top>0308e5b4-( 0 )</a></th>
+      <th id="salmon" title="sv3-orca-0311e4b4.sv.splunk.com"><a href="sv3-orca-0311e4b4.sv.splunk.com" target=_top>0311e4b4-( 0 )</a></th>
+      <th id="green" title="sv3-orca-0312e8b3.sv.splunk.com"><a href="sv3-orca-0312e8b3.sv.splunk.com" target=_top>0312e8b3-( 3 )</a></th>
+      <th id="salmon" title="sv3-orca-0313e3b3.sv.splunk.com"><a href="sv3-orca-0313e3b3.sv.splunk.com" target=_top>0313e3b3-( 0 )</a></th>
+      <th id="salmon" title="sv3-orca-0310e5b2.sv.splunk.com"><a href="sv3-orca-0310e5b2.sv.splunk.com" target=_top>0310e5b2-( 0 )</a></th>
+      <th id="green" title="sv3-orca-0308e2b1.sv.splunk.com"><a href="sv3-orca-0308e2b1.sv.splunk.com" target=_top>0308e2b1-( 2 )</a></th>
+      <th id="green" title="sv3-orca-0313e4b1.sv.splunk.com"><a href="sv3-orca-0313e4b1.sv.splunk.com" target=_top>0313e4b1-( 3 )</a></th>
+   </tr>
+</table>
+<br>
+<br>
+<b><p><font size=4px>Report Generated on :  Sun Oct 15 13:36:23 PDT 2017</font></p></b>
+</body>
+</html>
+

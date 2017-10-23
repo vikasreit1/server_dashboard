@@ -13,7 +13,7 @@ while true
 do
 
 dirpath=`pwd`
-FILE=${dirpath}/urls.txt
+FILE=${dirpath}/test_urls.txt
 HC_File=health_chk_status
 HEALTHCHECK=${dirpath}/health_chk_status
 MAIL_FROM=SERVICES-STATUS@serverName.com
@@ -270,6 +270,7 @@ check_ping (){
         port_status="DOWN"
         service_color="salmon"
         service_status="DOWN"
+        tooltiptext_color="tooltiptextred"
         # Overlay chek will determine this status
         # overlay_color="salmon"
         # overlay_status="DOWN"
@@ -323,6 +324,7 @@ check_telnet(){
       service_color="green"
       port_status="UP"
       port_color="lime"
+      tooltiptext_color="tooltiptextgreen"
   else
       telnet_status="DOWN"
       telnet_color="salmon"
@@ -330,6 +332,7 @@ check_telnet(){
       port_color="salmon"
       service_color="salmon"
       service_status="DOWN"
+      tooltiptext_color="tooltiptextred"
   fi
 }
 
@@ -370,6 +373,20 @@ check_overlay_network_port(){
   fi
 }
 
+check_cpu(){
+echo "checking cpu "
+}
+
+check_file_system(){
+
+echo "checking file system "
+}
+
+check_memory(){
+echo "checking memory "
+
+}
+
 check_disk_usage(){
 
    avg_service_time=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name iostat -xn 5)
@@ -401,13 +418,26 @@ generate_html(){
   nodename=$3 
   shortname=$4
   container_count=$5
+  tooltiptext_color=$6
   if [[ $url == "ucp.splunk.com" ]]
   then
-      echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${nodename}</a></th> " >> $i.html
+      # echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${nodename}</a></th> " >> $i.html
+      echo "  <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${nodename}<span class=\"$tooltiptext_color\">CPU<br>Memory<br>Disk Space</span> </a></th>   "  >> $i.html
   else
-      echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${shortname}-( ${container_count} )</a></th> " >> $i.html
+#      echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target=\"_top\">${shortname}-( ${container_count} )</a></th> " >> $i.html
+      echo " <th id="green"> <a class=\"tooltip\" href=\"$url\">${shortname}-( ${container_count} )<span class=\"$tooltiptext_color\">CPU<br>Memory<br>Disk Space</span> </a></th> " >> $i.html
   fi
 }
+
+
+# Sample Hover example
+#<div class="tooltip">Hover over me
+#  <span class="tooltiptext">Diskspace: 12332<br> cpu: test 2<br>memory: test3<br></span>
+#</div>
+
+#  <th id="green"> <a class="tooltip" href="#">Master01-( 0 )<span class="tooltiptext">TEST1<br>Test2<br>Test3</span> </a></th>
+#  <th id="green" title="sv3-orca-ucp-002.sv.splunk.com"><a href="sv3-orca-ucp-002.sv.splunk.com" target=_top>Master02-( 11 )</a></th>
+
 
 #--------------------------------------
 # If the host is a DB host,we check if
@@ -443,9 +473,11 @@ getResponse(){
                 ssh_color="lime"
                 telnet_status="UP"
                 telnet_color="lime"
+                tooltiptext_color="tooltiptextgreen"
              else
                 response="500"
                 service_color="salmon"
+                tooltiptext_color="tooltiptextred"
                 check_ping $host_name $portno
                 check_ssh $host_name
                 check_telnet $host_name $portno
@@ -475,7 +507,7 @@ getResponse(){
                        echo "      <th id=\"white\" ></th> " >> $i.html
                        count=0    ## Count is reset to 0
                  fi
-                 generate_html $service_color $url $nodename $shortname $container_count
+                 generate_html $service_color $url $nodename $shortname $container_count $tooltiptext_color
              continue 
         else
              check_dockerPS $host_name
@@ -496,7 +528,7 @@ getResponse(){
                        echo "      <th id=\"white\" ></th> " >> $i.html
                        count=0    ## Count is reset to 0
                  fi
-                 generate_html $service_color $url $nodename $shortname $container_count
+                 generate_html $service_color $url $nodename $shortname $container_count $tooltiptext_color
                  continue
              else
                  response=$(wget --secure-protocol=TLSv1  --timeout=20 --tries=1 --no-check-certificate $url:$portno 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
@@ -520,6 +552,7 @@ getResponse(){
                 telnet_color="lime"
                 port_status="UP"
                 port_color="lime"
+                tooltiptext_color="tooltiptextgreen"
         elif [ "$response" == "302" ]; then
                 service_color="lightBlue"
                 service_status="REDIRECT"
@@ -530,6 +563,7 @@ getResponse(){
                 ssh_color="lime"
                 telnet_status="UP"
                 telnet_color="lime"
+                tooltiptext_color="tooltiptextgreen"
         elif [ "$response" == "403" ]; then
                 service_color="lightBlue"
                 service_status="FILTER?"
@@ -551,6 +585,7 @@ getResponse(){
                 status="NOT_FOUND"
                 node_status="UP"
                 service_status="NOT_FOUND"
+                tooltiptext_color="tooltiptextred"
                 check_ping $host_name $portno $overlayport
                 # check_ssh $host_name
                 # check_telnet $host_name $portno
@@ -561,6 +596,7 @@ getResponse(){
                 status="500"
                 node_status="UP"
                 service_status="DOWN"
+                tooltiptext_color="tooltiptextred"
                 # ssh_status="UP"
                 # telnet_status="UP"
                 check_ping $host_name $portno $overlayport
@@ -573,6 +609,7 @@ getResponse(){
                 service_status="N/A"
                 ssh_status="N/A"
                 telnet_status="N/A"
+                tooltiptext_color="tooltiptextred"
                 check_ping $host_name $portno $overlayport
                 # check_ssh $host_name
                 # check_telnet $host_name $portno
@@ -583,6 +620,7 @@ getResponse(){
                 service_status="DOWN"
                 ssh_status="DOWN"
                 telnet_status="DOWN"
+                tooltiptext_color="tooltiptextred"
                 check_ping $host_name $portno $overlayport
                 # check_ssh $host_name
                 # check_telnet $host_name $portno
@@ -637,7 +675,7 @@ do
              echo "      <th id=\"white\" ></th> " >> $i.html
              count=0    ## Count is reset to 0
         fi
-        generate_html $service_color $url $nodename $shortname $container_count
+        generate_html $service_color $url $nodename $shortname $container_count $tooltiptext_color
         # echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${shortname}-${container_count}</a></th> " >> $i.html
        
     done
