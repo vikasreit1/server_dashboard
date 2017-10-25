@@ -239,7 +239,7 @@ check_dockerPS(){
     if [ $? -eq 0 ]
     then
         container_count=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@$host_name docker info | grep Running | cut -f2 -d":")
-        ucpagent_container_count=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@$host_name docker ps | grep ucp | wc -l)
+        ucpagent_container_count=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@$host_name docker ps | grep ucp-agent | wc -l)
         if [ $ucpagent_container_count -lt 2 ]
         then
             ucpagent_status="bad"
@@ -478,7 +478,7 @@ generate_html(){
   else
      if [[ $ucpagent_status == "bad" ]]
      then
-         echo " <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${shortname}-( ${container_count})-<span id="yellowred"> ${ucpagent_container_count}</span><span class=\"$tooltiptext_color\">CPU: \"$cpu_used\"  <br>Memory: \" $mem_used \" <br>Disk used: \" $disk_used\"</span> </a></th> " >> $i.html
+         echo " <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${shortname}-( ${container_count} )-<span id="yellowred"> ${ucpagent_container_count}</span><span class=\"$tooltiptext_color\">CPU: \"$cpu_used\"  <br>Memory: \" $mem_used \" <br>Disk used: \" $disk_used\"</span> </a></th> " >> $i.html
      else
 #      echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target=\"_top\">${shortname}-( ${container_count} )</a></th> " >> $i.html
          echo " <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${shortname}-( ${container_count} )<span class=\"$tooltiptext_color\">CPU: \"$cpu_used\"  <br>Memory: \" $mem_used \" <br>Disk used: \" $disk_used\"</span> </a></th> " >> $i.html
