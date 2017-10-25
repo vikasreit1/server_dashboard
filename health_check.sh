@@ -58,6 +58,7 @@ HTML_FILE=$OUTPUTDIR/final_output.html
 cpu_used="N/A"
 mem_used="N/A"
 disk_used="N/A"
+ucpagent_status="good"
 #--------------------------------------------------Future Support for CURL and Verbose output---------------------------------------------------------------------------
 # Curl Command
 # curl -i --ssl --connect-timeout 20 --retry 1 --retry-delay 2 --insecure https://repo.splunk.com/artifactory/api/system/ping 2>&1 | grep HTTP | tail -1 | cut -f2 -d" "
@@ -228,9 +229,9 @@ generateMaildata(){
    fi
 }
 
-
 check_dockerPS(){
     host_name=$1
+    group_name=$2
     # ssh -q root@$host_name docker ps -a --quiet 2>/dev/null
     #ssh -i ~/.ssh/id_rsa  root@sv3-orca-0409e2b2.sv.splunk.com docker ps
     # ssh -i ~/.ssh/id_rsa  root@sv3-orca-0409e2b2.sv.splunk.com docker info | grep -i running  | cut -f2 -d":"
@@ -238,12 +239,38 @@ check_dockerPS(){
     if [ $? -eq 0 ]
     then
         container_count=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@$host_name docker info | grep Running | cut -f2 -d":")
+        ucpagent_container_count=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@$host_name docker ps | grep ucp | wc -l)
+        if [ $ucpagent_container_count -lt 2 ]
+        then
+            ucpagent_status="bad"
+        elif [ $ucpagent_container_count -eq 3  ]
+        then
+            ucp_reconcile_count=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@$host_name docker ps | grep ucp-rec | wc -l)
+            if [ $ucp_reconcile_count -eq 1 ]
+            then
+                   ucpagent_status="good"
+            else
+                   ucpagent_status="bad"
+            fi
+        elif [ $ucpagent_container_count -gt 3 ]
+        then
+            if [[ $group_name == "UCPMasterProd" ]]
+            then
+               ucpagent_status="good"
+            else 
+               ucpagent_status="bad"
+            fi
+        else
+            ucpagent_status="good"
+        fi
         dockerps_color="lime"
         dockerps_status="UP"
     else
         dockerps_color="salmon"
         dockerps_status="DOWN"
         container_count="0"
+        ucpagent_container_count="0"
+        ucpagent_status="bad"
     fi
 }
 
@@ -437,17 +464,25 @@ host_restart() {
 generate_html(){
   service_color=$1
   url=$2
-  nodename=$3 
+  nodename=$3
   shortname=$4
   container_count=$5
   tooltiptext_color=$6
+  ucpagent_status=$7
+  ucpagent_container_count=$8
+
   if [[ $url == "ucp.splunk.com" ]]
   then
-      # echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${nodename}</a></th> " >> $i.html
-      echo "  <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${nodename}<span class=\"$tooltiptext_color\">CPU: \"$cpu_used\" <br>Memory: \" $mem_used \"<br>Disk used: \" $disk_used\"</span> </a></th>   "  >> $i.html
+#       echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${nodename}</a></th> " >> $i.html
+      echo "  <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${nodename}<span class=\"$tooltiptext_color\">CPU: \"$cpu_used\" <br>Memory: \" $mem_used \"<br>Disk used: \" $disk_used\"</span> </a></th> "  >> $i.html
   else
+     if [[ $ucpagent_status == "bad" ]]
+     then
+         echo " <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${shortname}-( ${container_count})-<span id="yellowred"> ${ucpagent_container_count}</span><span class=\"$tooltiptext_color\">CPU: \"$cpu_used\"  <br>Memory: \" $mem_used \" <br>Disk used: \" $disk_used\"</span> </a></th> " >> $i.html
+     else
 #      echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target=\"_top\">${shortname}-( ${container_count} )</a></th> " >> $i.html
-      echo " <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${shortname}-( ${container_count} )<span class=\"$tooltiptext_color\">CPU: \"$cpu_used\"  <br>Memory: \" $mem_used \" <br>Disk used: \" $disk_used\"</span> </a></th> " >> $i.html
+         echo " <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${shortname}-( ${container_count} )<span class=\"$tooltiptext_color\">CPU: \"$cpu_used\"  <br>Memory: \" $mem_used \" <br>Disk used: \" $disk_used\"</span> </a></th> " >> $i.html
+     fi
   fi
 }
 
@@ -509,7 +544,7 @@ getResponse(){
         then
              httpsurl="https://${url}/_ping"
              check_controller_https_ping $httpsurl
-             check_dockerPS $host_name
+             check_dockerPS $host_name $groupname
              check_ping $host_name $portno $overlayport
              response=$(wget --secure-protocol=TLSv1  --timeout=20 --tries=1 --no-check-certificate $url:$portno 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
              if [ "$response" != "200" ] || [[ "service_status" == "DOWN" ]] || [[ "node_status" == "DOWN" ]] || [[ "ssh_status" == "DOWN" ]] || [[ "telnet_status" == "DOWN" ]] || [[ "controller_status" == "DOWN" ]]
@@ -529,10 +564,10 @@ getResponse(){
                        echo "      <th id=\"white\" ></th> " >> $i.html
                        count=0    ## Count is reset to 0
                  fi
-                 generate_html $service_color $url $nodename $shortname $container_count $tooltiptext_color
+                 generate_html $service_color $url $nodename $shortname $container_count $tooltiptext_color $ucpagent_status $ucpagent_container_count
              continue 
         else
-             check_dockerPS $host_name
+             check_dockerPS $host_name $groupname
              if [[ $dockerps_status == "DOWN" ]]; then
                  check_ping $host_name $portno $overlayport
                  response=$(wget --secure-protocol=TLSv1  --timeout=20 --tries=1 --no-check-certificate $url:$portno 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
@@ -550,7 +585,7 @@ getResponse(){
                        echo "      <th id=\"white\" ></th> " >> $i.html
                        count=0    ## Count is reset to 0
                  fi
-                 generate_html $service_color $url $nodename $shortname $container_count $tooltiptext_color
+                 generate_html $service_color $url $nodename $shortname $container_count $tooltiptext_color $ucpagent_status $ucpagent_container_count
                  continue
              else
                  response=$(wget --secure-protocol=TLSv1  --timeout=20 --tries=1 --no-check-certificate $url:$portno 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
@@ -697,7 +732,7 @@ do
              echo "      <th id=\"white\" ></th> " >> $i.html
              count=0    ## Count is reset to 0
         fi
-        generate_html $service_color $url $nodename $shortname $container_count $tooltiptext_color
+        generate_html $service_color $url $nodename $shortname $container_count $tooltiptext_color $ucpagent_status $ucpagent_container_count
         # echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${shortname}-${container_count}</a></th> " >> $i.html
        
     done
