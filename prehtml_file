@@ -163,6 +163,7 @@ table, th, td {
 .tooltip .tooltiptextgreen {
     visibility: hidden;
     width: 180px;
+    font-family: monospace;`
     background-color: white;
     color: #010000;
     text-align: left;
