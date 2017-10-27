@@ -159,12 +159,14 @@ table, th, td {
     opacity: 1;
 }
 
+
 .tooltip .tooltiptextgreen {
     visibility: hidden;
     width: 180px;
-    background-color: green;
-    color: #fff;
-    text-align: center;
+    background-color: white;
+    color: #010000;
+    text-align: left;
+    border:  2px solid #010000;
     border-radius: 6px;
     padding: 5px 0;
     position: absolute;
@@ -173,7 +175,6 @@ table, th, td {
     left:150%;
     margin-left: -60px;
 
-    
     /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
     opacity: 0;
     transition: opacity 1s;
