@@ -7,17 +7,21 @@
 #-------------------------------------------------------------
 # Copy the logo into HISTORY directory
 
-
-# loop continuously 
+#----------------------------------------------
+# loop continuously
+# Status_values : good, bad, up, down
+# Colors        : lime, salmon
+#----------------------------------------------
 while true
 do
 
 dirpath=`pwd`
-FILE=${dirpath}/test_urls.txt
+FILE=${dirpath}/urls.txt
 HC_File=health_chk_status
 HEALTHCHECK=${dirpath}/health_chk_status
 MAIL_FROM=SERVICES-STATUS@serverName.com
 
+#MAIL_TO="vitikyalapati@splunk.com,scentoni@splunk.com,gli@splunk.com,eguo@splunk.com,txiao@splunk.com,lli@splunk.com,jiweil@splunk.com,tcheng@splunk.com"
 #MAIL_TO="vitikyalapati@splunk.com,scentoni@splunk.com"
 MAIL_TO="vitikyalapati@splunk.com"
 MAIL_SUB="Servers and Services status"
@@ -43,9 +47,9 @@ HTML_FILE=$OUTPUTDIR/final_output.html
 
 #---------------------------------------
 # Empty the mail file
-# total_maildata has the html 
+# total_maildata has the html
 #---------------------------------------
-> maildata.txt  
+> maildata.txt
 > total_maildata.txt
 #--------------------------------
 # Can send a custom text alert
@@ -56,8 +60,16 @@ HTML_FILE=$OUTPUTDIR/final_output.html
 # SET Default Vars
 #------------------
 cpu_used="N/A"
-mem_used="N/A"
+free_memory="N/A"
+memory_used="N/A"
 disk_used="N/A"
+io_error_status="N/A"
+mpt2sas_status="N/A"
+cpu_status="N/A"
+var_lib_status="N/A"
+#----------------------------------
+# The Default agent status is good
+#----------------------------------
 ucpagent_status="good"
 
 url="N/A"
@@ -66,6 +78,7 @@ Ping="N/A"
 in_rotation="N/A"
 OS="N/A"
 status="N/A"
+
 #--------------------------------------------------Future Support for CURL and Verbose output---------------------------------------------------------------------------
 # Curl Command
 # curl -i --ssl --connect-timeout 20 --retry 1 --retry-delay 2 --insecure https://repo.splunk.com/artifactory/api/system/ping 2>&1 | grep HTTP | tail -1 | cut -f2 -d" "
@@ -73,14 +86,15 @@ status="N/A"
 # echo "      <th id=\"$color\" title=\"$url\"><a href=\"$url\" target="_top">${status}</a></th> " >> $i.html
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  We do a telnet on the DB Nodes to check the port is up
-#---------------------------------------------------------- 
+#----------------------------------------------------------
 
 usage(){
 
 echo " This is the usage "
+echo " Supply a json/text file with the information "
+echo " about the hosts and their properties"
 
 }
-
 
 #------------------------------
 # Alerts - Email, TXT, HipChat
@@ -118,12 +132,10 @@ cat postmail_data >> total_maildata.txt
 ) | /usr/sbin/sendmail -t
 }
 
-
 sendHipChatAlert(){
   echo " this is hipchat alert "
   # Need to add this ??
 }
-
 
 if [ "$1" == "-h" ]; then
   echo "| ---------------------------------------------------------| "
@@ -150,7 +162,7 @@ case $i in
     ;;
 esac
 done
-  
+
 if [[ "$EMAIL" -ne "" ]]
 then
   email_address=${EMAIL}
@@ -164,10 +176,9 @@ fi
 #------Exit for Test------
 # exit 1
 
-
 #------------------------------
 #  Depends on the mail data
-# if maildata changes, this code 
+# if maildata changes, this code
 #  needs to be revisited
 #------------------------------
 # cat maildata.txt | grep -v TR | cut -f 2 -d "<" | cut -f2 -d">" | sort -nr | uniq
@@ -177,7 +188,7 @@ checkAlertPriority(){
    # url=$3
    for i in `cat maildata.txt | grep -v TR | cut -f 2 -d "<" | cut -f2 -d">" | sort -nr | uniq`
    do
-       if  [[ $i =~ .*Prod.* ]] 
+       if  [[ $i =~ .*Prod.* ]]
        then
             alertpriority="1"
             # sendAlert
@@ -216,22 +227,24 @@ generateMaildata(){
    dockerps_color=${12}
    overlay_status=${13}
    overlay_color=${14}
-   freeMem_status=${15}
-   freeMem_color=${16}
+   free_memory=${15}
+   free_memory_color=${16}
+   io_error_status=${17}
+   io_error_color=${18}
    controller_status="N/A"
    controller_color="white"
    # if [ "$#" -ne 12 ]; then
    #     overlay_status=${13}
    #     overlay_color=${14}
    # fi
-   if [ "$#" -eq 18 ]; then
-       controller_status=${17}
-       controller_color=${18}
+   if [ "$#" -eq 20 ]; then
+       controller_status=${19}
+       controller_color=${20}
    fi
    mail_file=maildata.txt
    if [ "$priority" == "1" ]
    then
-        echo "<TH bgcolor=lightyellow>$groupname</TH><TH bgcolor=lightyellow>$nodename</TH><TH bgcolor=$dockerps_color>$dockerps_status</TH><TH bgcolor=salmon>DOWN</TH><TH bgcolor=$node_color>$node_status</TH><TH bgcolor=$port_color>$port_status</TH><TH bgcolor=$ssh_color>$ssh_status</TH><TH bgcolor=$overlay_color>$overlay_status</TH><TH bgcolor=$controller_color>$controller_status</TH><TH bgcolor=$freeMem_color>$freeMem_status</TH>" >> maildata.txt
+        echo "<TH bgcolor=lightyellow>$groupname</TH><TH bgcolor=lightyellow>$nodename</TH><TH bgcolor=$dockerps_color>$dockerps_status</TH><TH bgcolor=salmon>DOWN</TH><TH bgcolor=$node_color>$node_status</TH><TH bgcolor=$port_color>$port_status</TH><TH bgcolor=$ssh_color>$ssh_status</TH><TH bgcolor=$overlay_color>$overlay_status</TH><TH bgcolor=$controller_color>$controller_status</TH><TH bgcolor=$free_memory_color>$free_memory</TH><TH bgcolor=$io_error_color>$io_error_status</TH>" >> maildata.txt
         echo "<TR>" >> maildata.txt
    fi
 }
@@ -264,7 +277,7 @@ check_dockerPS(){
             if [[ $group_name == "UCPMasterProd" ]]
             then
                ucpagent_status="good"
-            else 
+            else
                ucpagent_status="bad"
             fi
         else
@@ -294,7 +307,7 @@ check_ping (){
         check_ssh $host_name
         check_telnet $host_name $portno
         # - Not doing a cpu,memory and disk check as it will be part of ssh check
-        # If the arguments are not equal to 2, then its not a db node and we check the status of overlay port 
+        # If the arguments are not equal to 2, then its not a db node and we check the status of overlay port
         if [ "$#" -ne 2 ]; then
           overlayport=${3}
           check_overlay_network_port $host_name $overlayport
@@ -311,6 +324,7 @@ check_ping (){
         port_status="DOWN"
         service_color="salmon"
         service_status="DOWN"
+        io_error_color="salmon"
         tooltiptext_color="tooltiptextred"
         # Overlay chek will determine this status
         # overlay_color="salmon"
@@ -331,53 +345,94 @@ check_ssh(){
     then
         check_memory $host_name
         check_cpu $host_name
-        check_disk $host_name
+        check_var_lib $host_name
+        check_io_errors $host_name
+        check_mpt2sas $host_name
         ssh_color="lime"
         ssh_status="UP"
     else
         ssh_color="salmon"
         ssh_status="DOWN"
-        freeMem_status="N\A"
-        freeMem_color="salmon"
+        free_memory="N\A"
+        free_memory_color="salmon"
+        io_error_status="N/A"
+        io_error_color="salmon"
     fi
 }
 
 check_memory(){
     host_name=$1
-    freeMem_status=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name free -m | grep Mem | awk '{print ($2-$3)/1024}')
+    free_memory=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name free -m | grep Mem | awk '{print ($2-$3)/1024}')
     #freeMem_percentage
-    mem_used=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name  free -m | awk 'NR==2{printf "%.2f%%\t\t", $3*100/$2 }')
-    int_memory=$(echo $freeMem_status| cut -f1 -d"." )
-    # if [ "$int_memory" -le 4 ]
-    # then
-    #     freeMem_color="salmon"
-    # else
-    #     freeMem_color="lime"
-    # fi
+    memory_used_percent=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name  free -m | awk 'NR==2{printf "%.2f%%\t\t", $3*100/$2 }')
+    memory_used=$(echo $free_memory| cut -f1 -d"." )
+    # Condition to alert based on the memory usage
+    if [ "$free_memory" -le 4 ]
+    then
+        free_memory_color="salmon"
+        free_memory_status="bad"
+    else
+        free_memory_color="lime"
+        free_memory_status="good"
+    fi
+}
+
+check_mpt2sas(){
+    host_name=$1
+    mpt2sas_errors=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name dmesg | grep 'mpt2sas_cm0: log_info(0x32010081)' | wc -l)
+    if [ $? -eq 0 ] || [ $mpt2sas_errors -eq 0 ]
+    then
+        mpt2sas_error_status="good"
+        mpt2sas_error_color="lime"
+    else
+        ucpagent_status="bad"
+        mpt2sas_error_status="bad"
+        mpt2sas_error_color="salmon"
+    fi
+}
+
+check_io_errors(){
+    host_name=$1
+    io_error_count=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name journalctl -u docker.service -S "$(systemctl show -p ActiveEnterTimestamp docker.service | awk '{print $2 $3}')" | grep "input/output error" | wc -l)
+    if [ $io_error_count -gt 0 ]
+    then
+        ucpagent_status="bad"
+        io_error_status="bad"
+        io_error_color="salmon"
+    else
+        io_error_status="good"
+        io_error_color="lime"
+    fi
 }
 
 check_cpu(){
     host_name=$1
-    cpu_used=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name top -bn1 | grep load | awk '{printf "%.2f%%\t\t\n", $(NF-2)}')
-    int_cpu=$( echo $cpu_used | cut -f1 -d"." )
-    # if [ "$int_cpu" -gt 25 ]
-    # then
-    #     cpu_color="salmon"
-    # else
-    #     cpu_color="lime"
-    # fi
+    cpu_used_percent=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name top -bn1 | grep load | awk '{printf "%.2f%%\t\t\n", $(NF-2)}')
+    cpu_used=$( echo $cpu_used | cut -f1 -d"." )
+    # Condition to alert based on the cpu usage
+    if [ "$int_cpu" -gt 45 ]
+    then
+        ucpagent_status="bad"
+        cpu_status="bad"
+        cpu_color="salmon"
+    else
+        cpu_color="lime"
+        cpu_status="good"
+    fi
 }
 
-check_disk(){
+check_var_lib(){
     host_name=$1
-    disk_used=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name df -h | awk '$NF=="/var/lib/docker"{printf "%s\t\t", $5}')
-    int_disk_used=$( echo $disk_used | cut -f1 -d"%" )
-    # if [ "$int_disk_used" -gt 25 ]
-    # then
-    #     disk_color="salmon"
-    # else
-    #     disk_color="lime"
-    # fi
+    disk_used_percent=$(ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ConnectTimeout=5 root@$host_name df -h | awk '$NF=="/var/lib/docker"{printf "%s\t\t", $5}')
+    disk_used=$( echo $disk_used_percent | cut -f1 -d"%" )
+    if [ "$disk_used" -gt 30 ]
+    then
+        var_lib_color="salmon"
+        var_lib_status="bad"
+    else
+        var_lib_color="lime"
+        var_lib_status="good"
+    fi
 }
 
 check_telnet(){
@@ -413,7 +468,7 @@ check_controller_https_ping(){
     try2=$(wget --timeout=1 --tries=1 --no-check-certificate ${httpsurl}  2>&1  | grep HTTP | awk '{print $6}')
     sleep 1
     try3=$(wget --timeout=1 --tries=1 --no-check-certificate ${httpsurl}  2>&1  | grep HTTP | awk '{print $6}')
-    if [ "$try1" == "200" ] ||  [ "$try1" == "200" ] ||  [ "$try1" == "200" ]
+    if [ "$try1" == "200" ] ||  [ "$try2" == "200" ] ||  [ "$try3" == "200" ]
     then
         controller_status="UP"
         controller_color="lime"
@@ -441,7 +496,6 @@ check_overlay_network_port(){
       overlay_status="N/A"
   fi
 }
-
 
 check_system_io(){
 
@@ -477,20 +531,27 @@ generate_html(){
   tooltiptext_color=$6
   ucpagent_status=$7
   ucpagent_container_count=$8
+  io_error_status=$9
+  io_error_color=$10
+  mpt2sas_status=$11
+  mpt2sas_color=$12
+  cpu_satus=$13
+  cpu_color=$14
+  var_lib_status=$15
+  var_lib_color=$16
 
   if [[ $url == "ucp.splunk.com" ]]
   then
-      echo "  <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${nodename}<span class=\"$tooltiptext_color\">CPU: \"$cpu_used\" <br>Memory: \" $mem_used \"<br>Disk used: \" $disk_used\"</span> </a></th> "  >> $i.html
+      echo "  <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${nodename}<span class=\"$tooltiptext_color\">CPU: \"$cpu_used\" <br>Memory: \" $memory_used_percent \"<br>Disk used: \" $disk_used\"</span> </a></th> "  >> $i.html
   else
-     if [[ $ucpagent_status == "bad" ]]
+     if [[ $ucpagent_status == "bad" ]] || [[ $io_error_status == "bad" ]]
      then
-         echo " <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${shortname}-( ${container_count} )-<span id="yellowred"> ${ucpagent_container_count}</span><span class=\"$tooltiptext_color\">CPU: \"$cpu_used\"  <br>Memory: \" $mem_used \" <br>Disk used: \" $disk_used\"<br>Port: \"$Port\" <br> Ping: \"$Ping\" <br> In Rotation: \"$in_rotation\" <br> OS: \"$OS\" <br>Status: \"$status\" <br> URL: \"$url\" </span> </a></th> " >> $i.html
+         echo " <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${shortname}-( ${container_count} )-<span id="yellowred"> ${ucpagent_container_count}</span><span class=\"$tooltiptext_color\">CPU: \"$cpu_used\"  <br>Memory: \" $memory_used_percent \" <br>Disk used: \" $disk_used\"<br>Port: \"$Port\" <br> Ping: \"$Ping\" <br> In Rotation: \"$in_rotation\" <br> OS: \"$OS\" <br>Status: \"$status\" <br> URL: \"$url\" </span> </a></th> " >> $i.html
      else
-         echo " <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${shortname}-( ${container_count} )<span class=\"$tooltiptext_color\">CPU: \"$cpu_used\"  <br>Memory: \" $mem_used \" <br>Disk used: \" $disk_used\" <br>Port: \"$Port\" <br> Ping: \"$Ping\" <br> In Rotation: \"$in_rotation\" <br> OS: \"$OS\" <br>Status: \"$status\" <br> URL: \"$url\" </span> </a></th> " >> $i.html
+         echo " <th id=\"$service_color\"> <a class=\"tooltip\" href=\"$url\">${shortname}-( ${container_count} )<span class=\"$tooltiptext_color\">CPU: \"$cpu_used\"  <br>Memory: \" $memory_used_percent \" <br>Disk used: \" $disk_used\" <br>Port: \"$Port\" <br> Ping: \"$Ping\" <br> In Rotation: \"$in_rotation\" <br> OS: \"$OS\" <br>Status: \"$status\" <br> URL: \"$url\" </span> </a></th> " >> $i.html
      fi
   fi
 }
-
 
 # Sample Hover example
 #<div class="tooltip">Hover over me
@@ -499,7 +560,6 @@ generate_html(){
 
 #  <th id="green"> <a class="tooltip" href="#">Master01-( 0 )<span class="tooltiptext">TEST1<br>Test2<br>Test3</span> </a></th>
 #  <th id="green" title="sv3-orca-ucp-002.sv.splunk.com"><a href="sv3-orca-ucp-002.sv.splunk.com" target=_top>Master02-( 11 )</a></th>
-
 
 #--------------------------------------
 # If the host is a DB host,we check if
@@ -543,7 +603,7 @@ getResponse(){
                 check_ping $host_name $portno
                 check_ssh $host_name
                 check_telnet $host_name $portno
-                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $freeMem_status $freeMem_color
+                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $free_memory $free_memory_color $io_error_status $io_error_color $mpt2sas_status $mpt2sas_color $cpu_satus $cpu_color $var_lib_status $var_lib_color
              fi
         elif [[ $nodename =~ .*orca-ucp-00.* ]] ||  [[ $groupname == "UCPMasterProd" ]]
         then
@@ -552,9 +612,9 @@ getResponse(){
              check_dockerPS $host_name $groupname
              check_ping $host_name $portno $overlayport
              response=$(wget --secure-protocol=TLSv1  --timeout=20 --tries=1 --no-check-certificate $url:$portno 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
-             if [ "$response" != "200" ] || [[ "service_status" == "DOWN" ]] || [[ "node_status" == "DOWN" ]] || [[ "ssh_status" == "DOWN" ]] || [[ "telnet_status" == "DOWN" ]] || [[ "controller_status" == "DOWN" ]]
+             if [ "$response" != "200" ] || [[ "service_status" == "DOWN" ]] || [[ "node_status" == "DOWN" ]] || [[ "ssh_status" == "DOWN" ]] || [[ "telnet_status" == "DOWN" ]] || [[ "controller_status" == "DOWN" ]] || [[ "io_error_status" == "bad" ]] || [[ "mpt2sas_status" == "bad" ]] || [[ "cpu_status" == "bad" ]] || [[ "var_lib_status" == "bad" ]]
              then
-                  generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color  $freeMem_status $freeMem_color $controller_status $controller_color
+                  generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color  $free_memory $free_memory_color $controller_status $controller_color $io_error_status $io_error_color $mpt2sas_status $mpt2sas_color $cpu_satus $cpu_color $var_lib_status $var_lib_color
              fi
              if [ $firstrow -eq 21 ] && [ $count -gt 21 ]
                  then
@@ -570,13 +630,13 @@ getResponse(){
                        count=0    ## Count is reset to 0
                  fi
                  generate_html $service_color $url $nodename $shortname $container_count $tooltiptext_color $ucpagent_status $ucpagent_container_count
-             continue 
+             continue
         else
              check_dockerPS $host_name $groupname
              if [[ $dockerps_status == "DOWN" ]]; then
                  check_ping $host_name $portno $overlayport
                  response=$(wget --secure-protocol=TLSv1  --timeout=20 --tries=1 --no-check-certificate $url:$portno 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
-                 generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $freeMem_status $freeMem_color
+                 generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $free_memory $free_memory_color $io_error_status $io_error_color $mpt2sas_status $mpt2sas_color $cpu_satus $cpu_color $var_lib_status $var_lib_color
                  if [ $firstrow -eq 21 ] && [ $count -gt 21 ]
                  then
                        echo "   </tr>" >> $i.html
@@ -596,9 +656,9 @@ getResponse(){
                  response=$(wget --secure-protocol=TLSv1  --timeout=20 --tries=1 --no-check-certificate $url:$portno 2>&1  | grep HTTP | tail -1 | cut -f6 -d" ")
              fi
              # generate_html $service_color $url $nodename $container_count
-             # 
+             #
         fi
-        if [ "$response" == "200" ]; then 
+        if [ "$response" == "200" ]; then
                 service_color="green"
                 service_status="UP"
                 node_status="UP"
@@ -640,7 +700,7 @@ getResponse(){
                 check_ping $host_name $portno $overlayport # returns node_status ping_color
                 # check_ssh $host_name # returns ssh_status ssh_color
                 # check_telnet $host_name $portno # returns telnet_status telnet_color
-                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $freeMem_status $freeMem_color
+                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $free_memory $free_memory_color $io_error_status $io_error_color $mpt2sas_status $mpt2sas_color $cpu_satus $cpu_color $var_lib_status $var_lib_color
         elif [ "$response" == "404" ]; then
                 # check_ping $url
                 service_color="salmon"
@@ -651,9 +711,9 @@ getResponse(){
                 check_ping $host_name $portno $overlayport
                 # check_ssh $host_name
                 # check_telnet $host_name $portno
-                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $freeMem_status $freeMem_color
+                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $free_memory $free_memory_color $io_error_status $io_error_color $mpt2sas_status $mpt2sas_color $cpu_satus $cpu_color $var_lib_status $var_lib_color
         elif [ "$response" == "500" ]; then
-                # check_ping $url 
+                # check_ping $url
                 service_color="salmon"
                 status="500"
                 node_status="UP"
@@ -664,8 +724,8 @@ getResponse(){
                 check_ping $host_name $portno $overlayport
                 # check_ssh $host_name
                 # check_telnet $host_name $portno
-                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $freeMem_status $freeMem_color
-        elif [ "$response" == "EMPTY" ]; then 
+                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $free_memory $free_memory_color $io_error_status $io_error_color $mpt2sas_status $mpt2sas_color $cpu_satus $cpu_color $var_lib_status $var_lib_color
+        elif [ "$response" == "EMPTY" ]; then
                 service_color="grey"
                 node_status="N/A"
                 service_status="N/A"
@@ -675,7 +735,7 @@ getResponse(){
                 check_ping $host_name $portno $overlayport
                 # check_ssh $host_name
                 # check_telnet $host_name $portno
-        else 
+        else
                 service_color="salmon"
                 status="DOWN"
                 node_status="DOWN"
@@ -686,11 +746,10 @@ getResponse(){
                 check_ping $host_name $portno $overlayport
                 # check_ssh $host_name
                 # check_telnet $host_name $portno
-                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $freeMem_status $freeMem_color
+                generateMaildata $groupname $nodename $url $priority $node_status $node_color $ssh_status $ssh_color $telnet_status $telnet_color $dockerps_status $dockerps_color $overlay_status $overlay_color $free_memory $free_memory_color $io_error_status $io_error_color $mpt2sas_status $mpt2sas_color $cpu_satus $cpu_color $var_lib_status $var_lib_color
         fi
 
 }
-
 
 #----------------------------------------------------------------------------------------------------
 #     We first set the title in the html snippet and then do a loop on the respective group urls
@@ -720,14 +779,14 @@ do
              shortname=`echo $nodename | cut -f2 -d'-' `
         else
              shortname=`echo $nodename | cut -f3 -d'-' `
-        fi 
+        fi
         count=$(( $count + 1 ))
         firstrow=$(( $firstrow + 1 ))
         getResponse $groupname $nodename $url $portno $overlayport $priority $shortname $firstrow $count
         if [ $firstrow -eq 21 ] && [ $count -gt 21 ]
         then
              echo "   </tr>" >> $i.html
-             echo "   <tr>" >> $i.html 
+             echo "   <tr>" >> $i.html
         echo "      <th id=\"white\" ></th> " >> $i.html
              count=0    ## Count is reset to 0
         elif [ $count -gt 20 ] && [ $firstrow -gt 21 ]
@@ -737,9 +796,9 @@ do
              echo "      <th id=\"white\" ></th> " >> $i.html
              count=0    ## Count is reset to 0
         fi
-        generate_html $service_color $url $nodename $shortname $container_count $tooltiptext_color $ucpagent_status $ucpagent_container_count
+        generate_html $service_color $url $nodename $shortname $container_count $tooltiptext_color $ucpagent_status $ucpagent_container_count $io_error_status $io_error_color $mpt2sas_status $mpt2sas_color $cpu_satus $cpu_color $var_lib_status $var_lib_color
         # echo "      <th id=\"$service_color\" title=\"$url\"><a href=\"$url\" target="_top">${shortname}-${container_count}</a></th> " >> $i.html
-       
+
     done
     echo "   </tr>" >> $i.html
 done
@@ -816,13 +875,11 @@ checkAlertPriority
 sleep 400
 done
 
-echo " ----------------------------------------------------------------- " 
+echo " ----------------------------------------------------------------- "
 echo " |    Access the health check status using the below url after   | "
 echo " |    Start the webserver ---> python -m SimpleHTTPServer 2223 & | "
-echo " ----------------------- Access  URL ----------------------------- " 
+echo " ----------------------- Access  URL ----------------------------- "
 echo " |        localhost:2223/health_chk_status_latest.html           | "
-echo " ------------------------------------------------------------------ " 
-
-
+echo " ------------------------------------------------------------------ "
 
 
