@@ -1,8 +1,18 @@
 </TABLE>
 <br>
+<TABLE border=1>
+<TR>
+    <TD>Latest - Status</TD>
+    <TD bgcolor=peachpuff>http://ttam10.sv.splunk.com:2223/health_chk_status_latest.html</TD>
+</TR>
+<TR>
+    <TD>HISTORY</TD>
+    <TD bgcolor=peachpuff>http://ttam10.sv.splunk.com:2223/HISTORY</TD>
+  </TR>
+</TABLE>
+<br>
 <TABLE border=1 id="t02">
-
-    <tr>
+  <tr>
     <th>Status</th>
     <th>Action</th>
     <th>Helper Commands</th>
@@ -33,16 +43,5 @@
     <td>docker swarm leave, docker swarm join --token SWMTKN-1-3tyv45mbory79hjpaxq6zwu2960gfh30boigdiabh255igc2f0-3oo9fgd8cigzufuzdd2jw2v67  10.0.2.234:2377 or docker service restart / systemctl start docker</td>
   </tr>
 </TABLE>
-<br>
-<br>
-<TABLE border=1>
-<TR>
-    <TD>Latest - Status</TD>
-    <TD bgcolor=peachpuff>http://ttam10.sv.splunk.com:2223/health_chk_status_latest.html</TD>
-</TR>
-<TR>
-    <TD>HISTORY</TD>
-    <TD bgcolor=peachpuff>http://ttam10.sv.splunk.com:2223/HISTORY</TD>
-  </TR>
-</TABLE>
+
 </BODY></HTML>
