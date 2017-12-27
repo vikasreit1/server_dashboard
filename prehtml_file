@@ -159,15 +159,13 @@ table, th, td {
     opacity: 1;
 }
 
-
 .tooltip .tooltiptextgreen {
     visibility: hidden;
     width: 180px;
-    font-family: monospace;
-    background-color: white;
-    color: #010000;
-    text-align: left;
-    border:  2px solid #010000;
+    background-color: green;
+    color: #fff;
+    text-align: center;
+    border:  1px solid #010000;
     border-radius: 6px;
     padding: 5px 0;
     position: absolute;

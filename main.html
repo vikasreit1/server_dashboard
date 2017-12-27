@@ -66,6 +66,12 @@ div.tab button.active {
   <button class="tablinks" onclick="openCity(event, 'Jenkins')">Jenkins</button>
   <button class="tablinks" onclick="openCity(event, 'Bamboo')">Bamboo</button>
   <button class="tablinks" onclick="openCity(event, 'Artifactory')">Artifactory</button>
+  <button class="tablinks" onclick="openCity(event, 'SauceLabs')">SauceLabs</button>
+  <button class="tablinks" onclick="openCity(event, 'DockerHub')" >DockerHub</button>
+  <button class="tablinks" onclick="openCity(event, 'CodeShip')" >CodeShip</button>
+  <button class="tablinks" onclick="openCity(event, 'Codecov')" >Codecov</button>
+  <button class="tablinks" onclick="openCity(event, 'Coveralls')" >Coveralls</button>
+  <button class="tablinks" onclick="openCity(event, 'AWS')" >AWS</button>
 </div>
 
 <div id="UCP-Prod" class="tabcontent">
@@ -96,6 +102,42 @@ div.tab button.active {
   <h3>Artifactory</h3>
   <p>Content of Artifactory</p>
   <iframe src="/artifactory_status.html" scrolling="no" onload="resizeIframe(this)"  frameborder="0" style="overflow: hidden; height: 100%; width: 100%; position: absolute;" ></iframe>
+</div>
+
+<div id="SauceLabs" class="tabcontent">
+  <h3>SauceLabs</h3>
+  <p>Content of Saucelabs</p>
+  <iframe src="https://status.saucelabs.com" scrolling="yes" onload="resizeIframe(this)"  frameborder="0" style="overflow: hidden; height: 100%; width: 100%; position: absolute;" ></iframe>
+</div>
+
+<div id="DockerHub" class="tabcontent">
+  <h3>DockerHub</h3>
+  <p>Content of DockerHub</p>
+  <iframe src="https://status.docker.com/" scrolling="yes" onload="resizeIframe(this)"  frameborder="0" style="overflow: hidden; height: 100%; width: 100%; position: absolute;" ></iframe>
+</div>
+
+<div id="CodeShip" class="tabcontent">
+  <h3>CodeShip</h3>
+  <p>Content of CodeShip</p>
+  <iframe src="https://www.codeshipstatus.com/" scrolling="yes" onload="resizeIframe(this)"  frameborder="0" style="overflow: hidden; height: 100%; width: 100%; position: absolute;" ></iframe>
+</div>
+
+<div id="Codecov" class="tabcontent">
+  <h3>Codecov</h3>
+  <p>Content of Codecov</p>
+  <iframe src="https://status.codecov.io/" scrolling="yes" onload="resizeIframe(this)"  frameborder="0" style="overflow: hidden; height: 100%; width: 100%; position: absolute;" ></iframe>
+</div>
+
+<div id="Coveralls" class="tabcontent">
+  <h3>Coveralls</h3>
+  <p>Content of Coveralls</p>
+  <iframe src="http://status.coveralls.io/" scrolling="yes" onload="resizeIframe(this)"  frameborder="0" style="overflow: hidden; height: 100%; width: 100%; position: absolute;" ></iframe>
+</div>
+
+<div id="AWS" class="tabcontent">
+  <h3>AWS</h3>
+  <p>Content of AWS</p>
+  <iframe src="https://status.aws.amazon.com/" scrolling="yes" onload="resizeIframe(this)"  frameborder="0" style="overflow: hidden; height: 100%; width: 100%; position: absolute;" ></iframe>
 </div>
 
 <script>
