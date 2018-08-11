@@ -66,6 +66,7 @@ div.tab button.active {
   <button class="tablinks" onclick="openCity(event, 'Jenkins')">Jenkins</button>
   <button class="tablinks" onclick="openCity(event, 'Bamboo')">Bamboo</button>
   <button class="tablinks" onclick="openCity(event, 'Artifactory')">Artifactory</button>
+  <button class="tablinks" onclick="openCity(event, 'Github')">Github</button>
 </div>
 
 <div id="UCP-Prod" class="tabcontent">
@@ -97,6 +98,12 @@ div.tab button.active {
   <p>Content of Artifactory</p>
   <iframe src="/artifactory_status.html" scrolling="no" onload="resizeIframe(this)"  frameborder="0" style="overflow: hidden; height: 100%; width: 100%; position: absolute;" ></iframe>
 </div>
+<div id="Github" class="tabcontent">
+  <h3>Github</h3>
+  <p>Content of Github</p>
+  <iframe src="https://status.github.com/api/status.json?callback=apiStatus" frameborder="0" style="overflow: hidden; height: 100%; width: 100%; position: absolute;"></iframe>
+</div>
+
 
 <script>
 function openCity(evt, cityName) {
@@ -119,7 +126,9 @@ document.getElementById("defaultOpen").click();
 function resizeIframe(obj) {
     obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
   }
-
+function apiStatus(data) {
+    console.log(data.status);
+}
 </script>
 
 </body>

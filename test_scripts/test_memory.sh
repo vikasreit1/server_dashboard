@@ -19,5 +19,6 @@ check_memory(){
 
 check_memory sv3-orca-ucp-004.sv.splunk.com
 #check_memory sv3-orca-0313e1b3.sv.splunk.com
+check_memory sv3-orca-0308e5b4.sv.splunk.com
 
-echo $freeMem_color
+echo "$freeMem_color"

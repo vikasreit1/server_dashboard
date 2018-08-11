@@ -111,7 +111,7 @@ table, th, td {
 
 .tooltip .tooltiptext {
     visibility: hidden;
-    width: 180px;
+    width: 220px;
     background-color: black;
     color: #fff;
     text-align: center;
@@ -136,7 +136,7 @@ table, th, td {
 
 .tooltip .tooltiptextred {
     visibility: hidden;
-    width: 180px;
+    width: 220px;
     background-color: red;
     color: #fff;
     text-align: center;
@@ -159,14 +159,61 @@ table, th, td {
     opacity: 1;
 }
 
+.tooltip .tooltiptextredtop {
+    visibility: hidden;
+    width: 220px;
+    background-color: red;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left:150%;
+    margin-left: -60px;
+    
+    /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+.tooltip:hover .tooltiptextredtop {
+    visibility: visible;
+    opacity: 1;
+}
+
+.tooltip .tooltiptextredbottom {
+    visibility: hidden;
+    width: 220px;
+    background-color: red;
+    color: #fff;
+    text-align: center;
+    border:  2px solid #010000;
+    border-radius: 6px;
+    padding: 5px 0;
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: 100%;
+    left: 50%;
+    margin-left: -60px;    
+    /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+.tooltip:hover .tooltiptextredbottom {
+    visibility: visible;
+    opacity: 1;
+}
 
 .tooltip .tooltiptextgreen {
     visibility: hidden;
-    width: 180px;
-    font-family: monospace;
-    background-color: white;
+    width: 220px;
+    background-color: lime;
     color: #010000;
-    text-align: left;
+    text-align: center;
     border:  2px solid #010000;
     border-radius: 6px;
     padding: 5px 0;
@@ -182,6 +229,53 @@ table, th, td {
 }
 
 .tooltip:hover .tooltiptextgreen {
+    visibility: visible;
+    opacity: 1;
+}
+
+.tooltip .tooltiptextgreentop {
+    visibility: hidden;
+    width: 220px;
+    background-color: lime;
+    color: #010000;
+    text-align: center;
+    border:  2px solid #010000;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left:150%;
+    margin-left: -60px;
+
+    /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+.tooltip:hover .tooltiptextgreentop {
+    visibility: visible;
+    opacity: 1;
+}
+
+.tooltip .tooltiptextgreenbottom {
+    visibility: hidden;
+    width: 220px;
+    background-color: lime;
+    color: #010000;
+    text-align: center;
+    border:  2px solid #010000;
+    border-radius: 6px;
+    padding: 5px 0;
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: 100%;
+    left: 50%;
+    margin-left: -60px;
+}
+
+.tooltip:hover .tooltiptextgreenbottom {
     visibility: visible;
     opacity: 1;
 }
